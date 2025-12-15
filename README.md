@@ -149,7 +149,12 @@ youtube-2-whisper "https://youtu.be/example" 10 25 \
 export WHISPER_API_URL='...'
 export WHISPER_API_KEY='...'
 ```
-
+или создайте `.env` в директории `~/.youtube-2-whisper/`
+```env
+WHISPER_API_URL=http://localhost:8000/v1
+WHISPER_API_KEY=sk-12345  # Если используете локальный сервер, можно ввести любой набор символов
+WHISPER_MODEL_NAME=large-v3
+```
 ## 📝 Лицензия
 
 - [GPL-3.0 license](https://github.com/kikimora12304855/youtube_2_whisper#GPL-3.0-1-ov-file)
