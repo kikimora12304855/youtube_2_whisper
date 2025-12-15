@@ -43,7 +43,7 @@ sudo pacman -S ffmpeg
 ```bash
 git clone https://github.com/kikimora12304855/youtube_2_whisper.git
 
-cd youtube-2-whisper
+cd youtube_2_whisper
 
 uv tool install .
 ```
@@ -99,7 +99,7 @@ youtube-2-whisper "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 
 **2. Скачать фрагмент с 1-й по 3-ю минуту:**
 ```bash
-youtube-2-whisper "https://www.youtube.com/watch?v=dQw4w9WgXcQ" 1:00 3:00
+youtube-2-whisper "dQw4w9WgXcQ" 1:00 3:00
 ```
 
 **3. Скачать фрагмент с указанием папки и описания голоса:**
