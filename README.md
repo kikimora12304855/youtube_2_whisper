@@ -23,7 +23,17 @@
 Установите необходимые Python-библиотеки:
 
 ```bash
-pip install yt-dlp openai python-dotenv
+sudo apt update
+
+sudo apt install ffmpeg
+```
+```
+
+
+```bash
+sudo pacman -Syu
+
+sudo pacman -S ffmpeg
 ```
 
 ## 🚀 Настройка
