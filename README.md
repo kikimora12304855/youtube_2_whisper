@@ -1,125 +1,135 @@
+```html
+<div align="center">
+  <a href="README_RU.md">
+    🇷🇺 Русская версия
+  </a>
+</div>
+<br>
+```
+
+
 # YouTube-2-Whisper 🎙️
 
-**YouTube-2-Whisper** — это инструмент командной строки (CLI) для автоматизации процесса создания датасетов или транскрипций. Скрипт скачивает аудио с YouTube (или других платформ), обрабатывает его (нормализация громкости, конвертация в FLAC 24kHz) и отправляет на транскрипцию через OpenAI-совместимый API (например, локальный Whisper, OpenAI API или runpod).
+**YouTube-2-Whisper** is a CLI tool for automating dataset creation and transcription workflows. The script downloads audio from YouTube (or other platforms), processes it (loudness normalization, conversion to 24kHz FLAC), and sends it for transcription via an OpenAI-compatible API (e.g., local Whisper, OpenAI API, or runpod).
 
-## ✨ Возможности
+## ✨ Features
 
-*   📥 **Скачивание:** Поддержка YouTube и других видеохостингов через `yt-dlp`.
-*   ✂️ **Сегментация:** Возможность скачать как видео целиком, так и точный временной отрезок.
-*   🎚️ **Аудиопроцессинг:** Автоматическая нормализация громкости (Loudnorm) и конвертация в моно FLAC (24kHz) для идеальной совместимости с моделями обучения (например, VITS/Bert-VITS).
-*   🤖 **Интерактивная настройка:** Мастер первой настройки для создания конфигурации.
-*   📄 **Метаданные:** Генерация подробного JSON с информацией о спикере, таймингах, исходном тексте и нормализованной версии.
-*   🆔 **Уникальность:** Генерация SHA256 хеша для каждого сегмента для предотвращения дублей.
+*   📥 **Downloading:** Support for YouTube and other video hosting services via `yt-dlp`.
+*   ✂️ **Segmentation:** Ability to download entire videos or precise time segments.
+*   🎚️ **Audio Processing:** Automatic loudness normalization (Loudnorm) and conversion to mono FLAC (24kHz) for perfect compatibility with training models (e.g., VITS/Bert-VITS).
+*   🤖 **Interactive Setup:** First-run wizard to generate the configuration file.
+*   📄 **Metadata:** Generates detailed JSON containing speaker info, timings, raw text, and normalized text.
+*   🆔 **Uniqueness:** Generates a SHA256 hash for each segment to prevent duplicates.
 
-## ⚙️ Требования
+## ⚙️ Requirements
 
-Для работы скрипта необходимо установить:
+To run the script, you need to install:
 
-1.  **uv** 
-2.  **FFmpeg** (должен быть установлен в системе и доступен через переменную PATH).
+1.  **uv**
+2.  **FFmpeg** (must be installed on the system and available via the PATH variable).
 
-### Установка зависимостей
+### Installing Dependencies
 
-#### Устанвка uv
-Этот скрипт автоматически скачивает нужный бинарный файл `uv` и добавляет его в ваш путь.
+#### Installing uv
+This script automatically downloads the required `uv` binary and adds it to your path.
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-#### Устанвка FFmpeg
-Утановка для Ubuntu
+#### Installing FFmpeg
+Installation for Ubuntu
 ```bash
 sudo apt update
 sudo apt install ffmpeg
 ```
 
-Утановка для Arch
+Installation for Arch
 ```bash
 sudo pacman -Syu
 sudo pacman -S ffmpeg
 ```
 
-### Установка
+### Installation
 ```bash
 git clone https://github.com/kikimora12304855/youtube_2_whisper.git
 
-cd youtube_2_whisper
+cd youtube-2-whisper
 
 uv tool install .
 ```
 
-## 🚀 Настройка
+## 🚀 Configuration
 
-При первом запуске скрипт автоматически предложит ввести необходимые данные и создаст файл конфигурации `.env`.
+On the first run, the script will automatically prompt you to enter the necessary data and create a `.env` configuration file.
 
-Вы также можете создать файл `.env` вручную в одной из следующих директорий:
-1. В текущей папке скрипта.
+You can also manually create a `.env` file in one of the following directories:
+1. In the script's current folder.
 2. `~/.config/youtube-2-whisper/.env`
 3. `~/.youtube-2-whisper/.env`
 
-**Формат файла `.env`:**
+**`.env` file format:**
 
 ```ini
 WHISPER_API_URL=http://localhost:8000/v1
-WHISPER_API_KEY=sk-12345  # Если используете локальный сервер, можно ввести любой набор символов
+WHISPER_API_KEY=sk-12345  # If using a local server, you can enter any string
 WHISPER_MODEL_NAME=large-v3
 ```
 
-## 📖 Использование
+## 📖 Usage
 
-Запуск осуществляется через командную строку.
+Run the tool via the command line.
 
-### Синтаксис
+### Syntax
 
 ```bash
 youtube-2-whisper URL [START] [END] [OPTIONS]
 ```
 
-### Аргументы
+### Arguments
 
-*   `URL`: Ссылка на видео (обязательно).
-*   `START`: Время начала сегмента (опционально). Форматы: `45` (сек), `1:30` (мин:сек), `1:20:05` (ч:м:с).
-*   `END`: Время конца сегмента (опционально).
+*   `URL`: Video link (required).
+*   `START`: Segment start time (optional). Formats: `45` (sec), `1:30` (min:sec), `1:20:05` (h:m:s).
+*   `END`: Segment end time (optional).
 
-### Опции (Флаги)
+### Options (Flags)
 
-*   `-l`, `--lang`: Язык аудио (по умолчанию: `ru-RU`).
-*   `-t`, `--type`: Тип источника (`youtube`, `podcast`, `audiobook`, `dataset`).
-*   `-d`, `--description`: Текстовое описание голоса (для датасетов TTS).
-*   `-o`, `--output-dir`: Папка для сохранения результатов.
+*   `-l`, `--lang`: Audio language (default: `ru-RU`).
+*   `-t`, `--type`: Source type (`youtube`, `podcast`, `audiobook`, `dataset`).
+*   `-d`, `--description`: Text description of the voice (for TTS datasets).
+*   `-o`, `--output-dir`: Folder to save results.
 
 ***
 
-### Примеры
+### Examples
 
-**1. Скачать и транскрибировать видео целиком:**
+**1. Download and transcribe the entire video:**
 ```bash
 youtube-2-whisper "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 ```
 
-**2. Скачать фрагмент с 1-й по 3-ю минуту:**
+**2. Download a fragment from the 1st to the 3rd minute:**
 ```bash
-youtube-2-whisper "dQw4w9WgXcQ" 1:00 3:00
+youtube-2-whisper "https://www.youtube.com/watch?v=dQw4w9WgXcQ" 1:00 3:00
 ```
 
-**3. Скачать фрагмент с указанием папки и описания голоса:**
+**3. Download a fragment specifying a folder and voice description:**
 ```bash
 youtube-2-whisper "https://youtu.be/example" 10 25 \
   -o ./my_dataset \
-  -d "Женский голос, спокойный тембр, аудиокнига"
+  -d "Female voice, calm timbre, audiobook"
 ```
 
-## 📂 Формат выходных данных
+## 📂 Output Format
 
-Скрипт генерирует два файла для каждого запуска:
-1.  `filename.flac` — обработанное аудио.
-2.  `filename.json` — метаданные и текст.
+The script generates two files for each run:
+1.  `filename.flac` — processed audio.
+2.  `filename.json` — metadata and text.
 
-**Пример JSON:**
+**JSON Example:**
 
 ```json
 {
-  "id": "a1b2c3d4...", // SHA256 хеш (VideoID + Start + End)
+  "id": "a1b2c3d4...", // SHA256 hash (VideoID + Start + End)
   "lang": "ru-RU",
   "text": {
     "raw": "Привет, мир! Это тестовая запись.",
@@ -135,26 +145,26 @@ youtube-2-whisper "https://youtu.be/example" 10 25 \
     }
   },
   "speaker": {
-    "id": "UCuAXFkgsw1L7xaCfnd5JJOw", // ID канала или автора
-    "voice_description": "Голос: unknown..." // Ваше описание
+    "id": "UCuAXFkgsw1L7xaCfnd5JJOw", // Channel or Author ID
+    "voice_description": "Voice: unknown..." // Your description
   }
 }
 ```
 
-## 🛠 Устранение неполадок
+## 🛠 Troubleshooting
 
-**Ошибка: `Не указаны WHISPER_API_URL`**
-Скрипт не нашел файл `.env`. Запустите скрипт, и он предложит создать его, или задайте переменные окружения вручную:
+**Error: `WHISPER_API_URL not specified`**
+The script could not find the `.env` file. Run the script, and it will offer to create one, or set the environment variables manually:
 ```bash
 export WHISPER_API_URL='...'
 export WHISPER_API_KEY='...'
 ```
-или создайте `.env` в директории `~/.youtube-2-whisper/`
+or create `.env` in the `~/.youtube-2-whisper/` directory:
 ```env
 WHISPER_API_URL=http://localhost:8000/v1
-WHISPER_API_KEY=sk-12345  # Если используете локальный сервер, можно ввести любой набор символов
+WHISPER_API_KEY=sk-12345  # If using a local server, any string works
 WHISPER_MODEL_NAME=large-v3
 ```
-## 📝 Лицензия
+## 📝 License
 
 - [GPL-3.0 license](https://github.com/kikimora12304855/youtube_2_whisper#GPL-3.0-1-ov-file)
