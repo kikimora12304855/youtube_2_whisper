@@ -1,11 +1,9 @@
-```html
 <div align="center">
   <a href="README.md">
     🇬🇧 English Version
   </a>
 </div>
 <br>
-```
 
 # YouTube-2-Whisper 🎙️
 

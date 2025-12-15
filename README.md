@@ -1,12 +1,9 @@
-```html
 <div align="center">
   <a href="README_RU.md">
     🇷🇺 Русская версия
   </a>
 </div>
 <br>
-```
-
 
 # YouTube-2-Whisper 🎙️
 
