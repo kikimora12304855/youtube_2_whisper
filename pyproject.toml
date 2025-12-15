@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "youtube-2-whisper"
+version = "0.1.0"
+description = "YouTube to Whisper transcription tool"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "openai>=2.11.0",
+    "python-dotenv>=1.2.1",
+    "yt-dlp[default]>=2025.12.8",
+]
+
+[project.scripts]
+youtube-2-whisper = "main:main"
+
+[tool.setuptools]
+py-modules = ["main"]
+
+[tool.setuptools.package-dir]
+"" = "src"
