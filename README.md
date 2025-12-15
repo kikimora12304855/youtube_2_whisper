@@ -46,6 +46,11 @@ sudo pacman -Syu
 sudo pacman -S ffmpeg
 ```
 
+Installation for MacOS
+```bash
+brew install ffmpeg
+```
+
 ### Installation
 ```bash
 git clone https://github.com/kikimora12304855/youtube_2_whisper.git
