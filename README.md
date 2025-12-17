@@ -123,7 +123,7 @@ youtube-2-whisper "https://youtu.be/example" 10 25 \
   -o ./my_dataset \
   -d "Female voice, calm timbre, audiobook"
 ```
-> **See also:** [📚 Detailed Parameters Documentation](PARAMETERS_DOCUMENTATION.md) for comprehensive information about all command-line arguments, configuration options, and LLM prompts.
+> **See also:** [📚 Detailed Parameters Documentation](PARAMETERS_DOCUMENTATION_EN.md) for comprehensive information about all command-line arguments, configuration options, and LLM prompts.
 
 
 
