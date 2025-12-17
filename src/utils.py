@@ -10,7 +10,7 @@ def sanitize_filename(filename: str, max_length: int = MAX_FILENAME_LENGTH) -> s
     """
     Удаляет или заменяет недопустимые символы в имени файла.
 
-    Заменяет символы < > : " / \\ | ? * на подчеркивание.
+    Заменяет символы < > " / \\ | ? * на подчеркивание.
     Обрезает имя до максимальной длины.
 
     Args:
@@ -21,11 +21,11 @@ def sanitize_filename(filename: str, max_length: int = MAX_FILENAME_LENGTH) -> s
         str: Санитизированное имя файла
 
     Example:
-        >>> sanitize_filename("video:test/2024")
+        >>> sanitize_filename("video|test/2024")
         "video_test_2024"
     """
     # Заменяем недопустимые символы на подчеркивание
-    clean_name = re.sub(r'[<>:"/\\\\|?*]', "_", filename).strip()
+    clean_name = re.sub(r'[<>"/\\\\|?*]', "_", filename).strip()
 
     # Обрезаем до максимальной длины
     if len(clean_name) > max_length:
@@ -40,9 +40,12 @@ def parse_time(time_str: Union[str, int, float]) -> float:
 
     Поддерживаемые форматы:
     - 45 -> 45.0 секунд
+    - 20.5 -> 20.5 секунд (20 секунд 500 миллисекунд)
     - 1:30 -> 90.0 секунд (1 минута 30 секунд)
+    - 1:30.5 -> 90.5 секунд (1 минута 30 секунд 500 миллисекунд)
     - 1:2:30 -> 3750.0 секунд (1 час 2 минуты 30 секунд)
-    - 1:2:30:500 -> 3750.5 секунд (+ 500 миллисекунд)
+    - 1:2:30.5 -> 3750.5 секунд (+ 500 миллисекунд)
+    - 1:2:30:500 -> 3750.5 секунд (явная запись миллисекунд)
 
     Args:
         time_str: Строка времени или число
@@ -56,37 +59,51 @@ def parse_time(time_str: Union[str, int, float]) -> float:
     Examples:
         >>> parse_time("45")
         45.0
+        >>> parse_time("20.5")
+        20.5
+        >>> parse_time(20.5)
+        20.5
         >>> parse_time("1:30")
         90.0
+        >>> parse_time("1:30.5")
+        90.5
         >>> parse_time("1:0:0")
         3600.0
+        >>> parse_time("1:2:30:500")
+        3750.5
     """
     time_str = str(time_str).strip()
 
-    # Простой числовой формат
+    # Простой числовой формат (целое или десятичное)
     if ":" not in time_str:
         return float(time_str)
 
     # Разбиваем по двоеточию
-    parts = list(map(float, time_str.split(":")))
+    parts = time_str.split(":")
 
     # Обработка разных форматов
     if len(parts) == 2:
-        # MM:SS -> минуты * 60 + секунды
-        return parts[0] * 60 + parts[1]
+        # MM:SS или MM:SS.mmm -> минуты * 60 + секунды (с возможными миллисекундами)
+        return float(parts[0]) * 60 + float(parts[1])
 
     elif len(parts) == 3:
-        # HH:MM:SS -> часы * 3600 + минуты * 60 + секунды
-        return parts[0] * 3600 + parts[1] * 60 + parts[2]
+        # HH:MM:SS или HH:MM:SS.mmm -> часы * 3600 + минуты * 60 + секунды
+        return float(parts[0]) * 3600 + float(parts[1]) * 60 + float(parts[2])
 
     elif len(parts) == 4:
-        # HH:MM:SS:MSS -> + миллисекунды / 1000
-        return parts[0] * 3600 + parts[1] * 60 + parts[2] + parts[3] / 1000
+        # HH:MM:SS:MSS -> часы * 3600 + минуты * 60 + секунды + миллисекунды / 1000
+        return (
+            float(parts[0]) * 3600
+            + float(parts[1]) * 60
+            + float(parts[2])
+            + float(parts[3]) / 1000
+        )
 
     else:
         raise ValueError(
             f"Неверный формат времени: {time_str}. "
-            f"Ожидается: секунды, MM:SS, HH:MM:SS или HH:MM:SS:MSS"
+            f"Поддерживаются форматы: "
+            f"секунды (45 или 20.5), MM:SS, HH:MM:SS, HH:MM:SS:MSS"
         )
 
 

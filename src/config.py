@@ -53,7 +53,7 @@ class ConfigManager:
         config_path = ConfigPaths.get_default_config_path()
         config_path.parent.mkdir(parents=True, exist_ok=True)
 
-        print("\\n🔧 Первая настройка youtube-2-whisper")
+        print("\n🔧 Первая настройка youtube-2-whisper")
         print("=" * 60)
 
         # Основные параметры Whisper
@@ -62,22 +62,22 @@ class ConfigManager:
         model = input("Введите WHISPER_MODEL_NAME [stt]: ").strip() or "stt"
 
         # Параметры LLM (опционально)
-        print("\\n--- Настройки LLM нормализации (опционально) ---")
+        print("\n--- Настройки LLM нормализации (опционально) ---")
         llm_enabled = (
             input("Включить LLM нормализацию текста? (y/n) [n]: ").strip().lower()
         )
 
         with open(config_path, "w", encoding="utf-8") as f:
-            f.write(f"WHISPER_API_URL={url}\\n")
-            f.write(f"WHISPER_API_KEY={key}\\n")
-            f.write(f"WHISPER_MODEL_NAME={model}\\n")
+            f.write(f"WHISPER_API_URL={url}\n")
+            f.write(f"WHISPER_API_KEY={key}\n")
+            f.write(f"WHISPER_MODEL_NAME={model}\n")
 
             if llm_enabled in ["y", "yes", "д", "да"]:
                 llm_model = input("Введите LLM_MODEL_NAME [llm]: ").strip() or "llm"
-                f.write(f"LLM_ENABLED=true\\n")
-                f.write(f"LLM_MODEL_NAME={llm_model}\\n")
+                f.write(f"LLM_ENABLED=true\n")
+                f.write(f"LLM_MODEL_NAME={llm_model}\n")
 
-        print(f"\\n✅ Конфиг сохранен: {config_path}")
+        print(f"\n✅ Конфиг сохранен: {config_path}")
         load_dotenv(config_path)
 
     def load(self) -> None:
@@ -137,12 +137,12 @@ class ConfigManager:
             env_loaded: Был ли загружен какой-либо .env файл
         """
         if not env_loaded:
-            print("\\n⚠️  Файл .env не найден. Искал в:")
+            print("\n⚠️  Файл .env не найден. Искал в:")
             for path in ConfigPaths.get_env_paths():
                 print(f"    - {path}")
 
-        print("\\n❌ Ошибка: Не указаны WHISPER_API_URL и/или WHISPER_API_KEY")
-        print("\\n📋 Варианты решения:")
+        print("\n❌ Ошибка: Не указаны WHISPER_API_URL и/или WHISPER_API_KEY")
+        print("\n📋 Варианты решения:")
         print("1. Создайте .env файл в текущей директории")
         print("2. Создайте ~/.config/youtube-2-whisper/.env")
         print("3. Установите системные переменные:")
@@ -151,15 +151,13 @@ class ConfigManager:
 
         # Предлагаем создать конфиг
         try:
-            choice = (
-                input("\\n❓ Хотите создать конфиг сейчас? (y/n): ").strip().lower()
-            )
+            choice = input("\n❓ Хотите создать конфиг сейчас? (y/n): ").strip().lower()
             if choice in ["y", "yes", "д", "да"]:
                 self.create_interactive_config()
                 self.load()  # Перезагружаем конфиг
                 return
         except (KeyboardInterrupt, EOFError):
-            print("\\n")
+            print("\n")
 
         sys.exit(1)
 

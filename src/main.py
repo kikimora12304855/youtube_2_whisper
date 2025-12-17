@@ -54,7 +54,7 @@ def create_parser() -> argparse.ArgumentParser:
         "start",
         nargs="?",
         default=None,
-        help="Время начала фрагмента (опционально)\\nФорматы: 45, 1:30, 1:2:30, 1:2:30:500",
+        help="Время начала фрагмента (опционально)\nФорматы: 45, 1:30, 1:2:30, 1:2:30:500",
     )
 
     parser.add_argument(
@@ -169,7 +169,7 @@ def main():
     args = parser.parse_args()
 
     # Вывод информации о запуске
-    print("\\n" + "=" * 60)
+    print("\n" + "=" * 60)
     print("🎙️  youtube-2-whisper")
     print("=" * 60)
     print(f"📍 URL: {args.url}")
@@ -177,7 +177,7 @@ def main():
         print(f"⏱️  Сегмент: {args.start} → {args.end}")
     print(f"🌍 Язык: {args.lang}")
     print(f"📁 Выходная директория: {args.output_dir}")
-    print("=" * 60 + "\\n")
+    print("=" * 60 + "\n")
 
     # Инициализация компонентов
     try:
@@ -225,10 +225,10 @@ def main():
             sys.exit(1)
 
     except KeyboardInterrupt:
-        print("\\n\\n⚠️  Прервано пользователем")
+        print("\n\n⚠️  Прервано пользователем")
         sys.exit(130)
     except Exception as e:
-        print(f"\\n❌ Неожиданная ошибка: {e}")
+        print(f"\n❌ Неожиданная ошибка: {e}")
         import traceback
 
         traceback.print_exc()

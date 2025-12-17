@@ -191,20 +191,20 @@ class VideoProcessor:
             json_path: Путь к JSON
             speaker_id: ID говорящего
         """
-        print("\\n" + "=" * 60)
+        print("\n" + "=" * 60)
         print("✅ РЕЗУЛЬТАТ ТРАНСКРИПЦИИ")
         print("=" * 60)
 
-        print("\\n📝 Исходный текст:")
+        print("\n📝 Исходный текст:")
         print("-" * 60)
         print(raw_text)
 
         if normalized_text and normalized_text != raw_text.lower().strip():
-            print("\\n✨ Нормализованный текст:")
+            print("\n✨ Нормализованный текст:")
             print("-" * 60)
             print(normalized_text)
 
-        print("\\n" + "=" * 60)
+        print("\n" + "=" * 60)
         print(f"💾 Сохранено: {json_path}")
         print(f"🎤 Speaker ID: {speaker_id}")
         print("=" * 60)

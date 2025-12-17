@@ -75,6 +75,9 @@ You can also manually create a `.env` file in one of the following directories:
 WHISPER_API_URL=http://localhost:8000/v1
 WHISPER_API_KEY=sk-12345  # If using a local server, you can enter any string
 WHISPER_MODEL_NAME=large-v3
+
+LLM_ENABLED=true
+LLM_MODEL_NAME=llm
 ```
 
 ## 📖 Usage
