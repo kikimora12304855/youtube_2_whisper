@@ -17,6 +17,7 @@
 *   🤖 **Interactive Setup:** First-run wizard to generate the configuration file.
 *   📄 **Metadata:** Generates detailed JSON containing speaker info, timings, raw text, and normalized text.
 *   🆔 **Uniqueness:** Generates a SHA256 hash for each segment to prevent duplicates.
+*   🧠 **LLM Text Normalization:** Optional LLM-based text post-processing with configurable generation parameters (temperature, top-p sampling).
 
 ## ⚙️ Requirements
 
@@ -76,8 +77,11 @@ WHISPER_API_URL=http://localhost:8000/v1
 WHISPER_API_KEY=sk-12345  # If using a local server, you can enter any string
 WHISPER_MODEL_NAME=large-v3
 
+# LLM Configuration
 LLM_ENABLED=true
 LLM_MODEL_NAME=llm
+LLM_TEMPERATURE=0.3  # Generation temperature (0.0-2.0)
+LLM_TOP_P=0.9       # Top-P sampling (0.0-1.0)
 ```
 
 ## 📖 Usage
@@ -102,6 +106,8 @@ youtube-2-whisper URL [START] [END] [OPTIONS]
 *   `-t`, `--type`: Source type (`youtube`, `podcast`, `audiobook`, `dataset`).
 *   `-d`, `--description`: Text description of the voice (for TTS datasets).
 *   `-o`, `--output-dir`: Folder to save results.
+*   `--llm-temperature`: LLM generation temperature (0.0-2.0, default: 0.3).
+*   `--top-p`: Top-P sampling parameter (0.0-1.0, default: 0.9).
 
 ***
 
@@ -123,9 +129,15 @@ youtube-2-whisper "https://youtu.be/example" 10 25 \
   -o ./my_dataset \
   -d "Female voice, calm timbre, audiobook"
 ```
-> **See also:** [📚 Detailed Parameters Documentation](PARAMETERS_DOCUMENTATION_EN.md) for comprehensive information about all command-line arguments, configuration options, and LLM prompts.
 
+**4. Using LLM normalization with custom parameters:**
+```bash
+youtube-2-whisper "https://youtu.be/example" \
+  --llm-temperature 0.7 \
+  --top-p 0.8
+```
 
+> **See also:** [📚 Detailed Parameters Documentation](PARAMETERS_DOCUMENTATION.md) for comprehensive information about all command-line arguments, configuration options, and LLM prompts.
 
 ## 📂 Output Format
 
@@ -173,6 +185,10 @@ WHISPER_API_URL=http://localhost:8000/v1
 WHISPER_API_KEY=sk-12345  # If using a local server, any string works
 WHISPER_MODEL_NAME=large-v3
 ```
+
+**LLM Normalization Issues**
+If LLM returns empty responses, the script falls back to simple text normalization. Check your API connection and model compatibility.
+
 ## 📝 License
 
 - [GPL-3.0 license](https://github.com/kikimora12304855/youtube_2_whisper#GPL-3.0-1-ov-file)

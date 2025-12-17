@@ -45,11 +45,11 @@ class LLMNormalizer:
     """
     Класс для нормализации текста через LLM.
 
-    Будущая функциональность:
-    - Исправление ошибок транскрипции
-    - Пунктуация и форматирование
-    - Удаление filler words (эм, ну, типа)
-    - Структурирование текста
+    Поддерживает настройку параметров генерации:
+    - temperature: креативность (0.0-2.0)
+    - top_k: ограничение выбора токенов
+    - top_p: nucleus sampling
+    - max_tokens: максимальная длина ответа
     """
 
     # Системный промпт по умолчанию для нормализации
@@ -98,6 +98,8 @@ class LLMNormalizer:
         api_key: str,
         model_name: str = "llm",
         system_prompt: Optional[str] = None,
+        temperature: float = 0.3,
+        top_p: float = 0.9,
     ):
         """
         Инициализация LLM нормализатора.
@@ -107,10 +109,19 @@ class LLMNormalizer:
             api_key: API ключ
             model_name: Имя LLM модели
             system_prompt: Кастомный системный промпт
+            temperature: Температура генерации (0.0-2.0)
+                - 0.0-0.3: Детерминированный, точный
+                - 0.3-0.7: Сбалансированный
+                - 0.7-1.0: Креативный
+                - 1.0-2.0: Очень креативный (нестабильный)
+            top_p: Top-P (nucleus) sampling (0.0-1.0)
+
         """
         self.client = OpenAI(api_key=api_key, base_url=api_url)
         self.model_name = model_name
         self.system_prompt = system_prompt or self.DEFAULT_SYSTEM_PROMPT
+        self.temperature = temperature
+        self.top_p = top_p
 
     def normalize(self, raw_text: str) -> str:
         """
@@ -132,11 +143,18 @@ class LLMNormalizer:
                     {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": raw_text},
                 ],
-                temperature=0.3,  # Низкая температура для стабильности
-                max_tokens=2000,
+                temperature=self.temperature,  # Используем атрибут вместо хардкода
+                top_p=self.top_p,
             )
 
-            normalized = response.choices[0].message.content.strip()
+            # Проверяем что ответ не пустой
+            content = response.choices[0].message.content
+
+            if content is None or content == "":
+                print("⚠️  LLM вернул пустой ответ")
+                return normalize_text_simple(raw_text)
+
+            normalized = content.strip()
             return normalized
 
         except Exception as e:

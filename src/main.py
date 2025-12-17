@@ -7,6 +7,7 @@
 import sys
 import argparse
 from pathlib import Path
+from typing import Optional
 
 from config import config
 from youtube_downloader import AudioDownloader
@@ -29,19 +30,19 @@ def create_parser() -> argparse.ArgumentParser:
 Примеры использования:
 
   # Полное видео
-  python main.py "https://youtube.com/watch?v=VIDEO_ID"
+  youtube-2-whisper "https://youtube.com/watch?v=VIDEO_ID"
 
   # Фрагмент видео (с 1:30 до 5:45)
-  python main.py "https://youtube.com/watch?v=VIDEO_ID" 1:30 5:45
+  youtube-2-whisper "URL or VIDEO_ID" 1:30 5:45
 
   # С описанием голоса и типом источника
-  python main.py "URL" --type podcast --description "Мужской голос, низкий тембр"
+  youtube-2-whisper "URL or VIDEO_ID" --type podcast --description "Мужской голос, низкий тембр"
 
   # С LLM нормализацией (если включена в .env)
-  python main.py "URL" --llm-prompt podcast
+  youtube-2-whisper "URL or VIDEO_ID" --llm-prompt podcast
 
   # Сохранение в определенную директорию
-  python main.py "URL" -o /path/to/output
+  youtube-2-whisper "URL or VIDEO_ID" -o /path/to/output
         """,
     )
 
@@ -84,6 +85,20 @@ def create_parser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
+        "--temperature",
+        type=float,
+        default=0.3,
+        help="Температура генерации (0.0-2.0, по умолчанию: 0.3)",
+    )
+
+    parser.add_argument(
+        "--top-p",
+        type=float,
+        default=0.9,
+        help="Top-P sampling (0.0-1.0, по умолчанию: 0.9)",
+    )
+
+    parser.add_argument(
         "-o",
         "--output-dir",
         type=str,
@@ -116,7 +131,7 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def setup_llm_normalizer(args: argparse.Namespace) -> LLMNormalizer:
+def setup_llm_normalizer(args: argparse.Namespace) -> Optional[LLMNormalizer]:
     """
     Настраивает LLM нормализатор на основе аргументов.
 
@@ -151,6 +166,8 @@ def setup_llm_normalizer(args: argparse.Namespace) -> LLMNormalizer:
     normalizer = LLMNormalizer(
         api_url=config.whisper_api_url,
         api_key=config.whisper_api_key,
+        top_p=config.llm_top_p,
+        temperature=config.llm_temperature,
         model_name=config.llm_model_name,
         system_prompt=system_prompt,
     )

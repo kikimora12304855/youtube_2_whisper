@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 from dotenv import load_dotenv
 import os
 
@@ -35,11 +35,14 @@ class ConfigManager:
 
     def __init__(self):
         """Инициализация менеджера конфигурации."""
-        self.whisper_api_url: Optional[str] = None
-        self.whisper_api_key: Optional[str] = None
+        self.whisper_api_url: str = ""
+        self.whisper_api_key: str = ""
         self.whisper_model_name: str = "stt"
         self.llm_model_name: str = "llm"  # Для будущей интеграции LLM
         self.llm_enabled: bool = False  # Флаг включения LLM нормализации
+        self.llm_temperature: float = 0.3
+        self.llm_top_k: int = 40
+        self.llm_top_p: float = 0.9
 
     def create_interactive_config(self) -> None:
         """
@@ -74,7 +77,7 @@ class ConfigManager:
 
             if llm_enabled in ["y", "yes", "д", "да"]:
                 llm_model = input("Введите LLM_MODEL_NAME [llm]: ").strip() or "llm"
-                f.write(f"LLM_ENABLED=true\n")
+                f.write("LLM_ENABLED=true\n")
                 f.write(f"LLM_MODEL_NAME={llm_model}\n")
 
         print(f"\n✅ Конфиг сохранен: {config_path}")
@@ -105,8 +108,16 @@ class ConfigManager:
                 break
 
         # Загружаем переменные
-        self.whisper_api_url = os.getenv("WHISPER_API_URL")
-        self.whisper_api_key = os.getenv("WHISPER_API_KEY")
+        whisper_url = os.getenv("WHISPER_API_URL")
+        whisper_key = os.getenv("WHISPER_API_KEY")
+
+        # Валидация обязательных параметров
+        if not whisper_url or not whisper_key:
+            self._handle_missing_config(env_loaded)
+            return
+
+        self.whisper_api_url = whisper_url
+        self.whisper_api_key = whisper_key
         self.whisper_model_name = os.getenv("WHISPER_MODEL_NAME", "stt")
         self.llm_model_name = os.getenv("LLM_MODEL_NAME", "llm")
         self.llm_enabled = os.getenv("LLM_ENABLED", "false").lower() in [
@@ -114,11 +125,8 @@ class ConfigManager:
             "1",
             "yes",
         ]
-
-        # Валидация обязательных параметров
-        if not self.whisper_api_url or not self.whisper_api_key:
-            self._handle_missing_config(env_loaded)
-            return
+        self.llm_temperature = float(os.getenv("LLM_TEMPERATURE", "0.3"))
+        self.llm_top_p = float(os.getenv("LLM_TOP_P", "0.9"))
 
         # Вывод информации о загруженной конфигурации
         if loaded_path:
