@@ -1,329 +1,332 @@
-# 📚 Документация по параметрам и аргументам
+# 📚 Parameters and Arguments Documentation
 
-Этот документ содержит подробное описание всех параметров, аргументов и конфигураций, доступных в проекте youtube-2-whisper.
+This document provides comprehensive information about all parameters, arguments, and configurations available in the youtube-2-whisper project.
 
-## 📋 Содержание
+## 📋 Table of Contents
 
-1. [Аргументы командной строки](#аргументы-командной-строки)
-2. [Параметры конфигурации (.env)](#параметры-конфигурации-env)
-3. [Типы источников](#типы-источников)
-4. [Промпты для LLM нормализации](#промпты-для-llm-нормализации)
-5. [Форматы временных меток](#форматы-временных-меток)
-6. [Примеры использования](#примеры-использования)
+1. [Command-Line Arguments](#command-line-arguments)
+2. [Configuration Parameters (.env)](#configuration-parameters-env)
+3. [Source Types](#source-types)
+4. [LLM Normalization Prompts](#llm-normalization-prompts)
+5. [Time Format Specifications](#time-format-specifications)
+6. [Usage Examples](#usage-examples)
+7. [Output Format](#output-format)
+8. [Troubleshooting](#troubleshooting)
+9. [Notes](#notes)
 
-## 🎯 Аргументы командной строки
+## 🎯 Command-Line Arguments
 
-### Основные аргументы
+### Main Arguments
 
-#### `URL` (обязательный)
-- **Описание**: Ссылка на видео с YouTube или другой поддерживаемой платформы (Vimeo, SoundCloud и др.)
-- **Формат**: `https://youtube.com/watch?v=VIDEO_ID` или `https://youtu.be/VIDEO_ID`
-- **Пример**: `"https://www.youtube.com/watch?v=dQw4w9WgXcQ"`
+#### `URL` (required)
+- **Description**: Video link from YouTube or other supported platforms (Vimeo, SoundCloud, etc.)
+- **Format**: `https://youtube.com/watch?v=VIDEO_ID` or `https://youtu.be/VIDEO_ID`
+- **Example**: `"https://www.youtube.com/watch?v=dQw4w9WgXcQ"`
 
-#### `START` (опциональный)
-- **Описание**: Время начала сегмента для скачивания
-- **Форматы**:
-  - `45` (секунды)
-  - `1:30` (минуты:секунды)
-  - `1:20:05` (часы:минуты:секунды)
-  - `1:20:30:500` (часы:минуты:секунды:миллисекунды)
-- **Пример**: `1:30` (начало с 1 минуты 30 секунд)
+#### `START` (optional)
+- **Description**: Start time of the segment to download
+- **Formats**:
+  - `45` (seconds)
+  - `1:30` (minutes:seconds)
+  - `1:20:05` (hours:minutes:seconds)
+  - `1:20:30:500` (hours:minutes:seconds:milliseconds)
+- **Example**: `1:30` (start at 1 minute 30 seconds)
 
-#### `END` (опциональный)
-- **Описание**: Время окончания сегмента для скачивания
-- **Форматы**: те же, что и для `START`
-- **Пример**: `5:45` (окончание на 5 минутах 45 секунд)
+#### `END` (optional)
+- **Description**: End time of the segment to download
+- **Formats**: same as `START`
+- **Example**: `5:45` (end at 5 minutes 45 seconds)
 
-### Опциональные флаги
+### Optional Flags
 
 #### `-l`, `--lang`
-- **Описание**: Язык аудио для транскрипции
-- **Тип**: строка
-- **По умолчанию**: `ru-RU`
-- **Примеры**:
-  - `-l en-US` (английский)
-  - `-l de-DE` (немецкий)
-  - `-l fr-FR` (французский)
+- **Description**: Audio language for transcription
+- **Type**: string
+- **Default**: `ru-RU`
+- **Examples**:
+  - `-l en-US` (English)
+  - `-l de-DE` (German)
+  - `-l fr-FR` (French)
 
 #### `-t`, `--type`
-- **Описание**: Тип источника аудио
-- **Тип**: строка
-- **Возможные значения**: `youtube`, `podcast`, `audiobook`, `dataset`, `lecture`
-- **По умолчанию**: `youtube`
-- **Примеры**:
-  - `-t podcast` (подкаст)
-  - `-t audiobook` (аудиокнига)
-  - `-t lecture` (лекция)
+- **Description**: Type of audio source
+- **Type**: string
+- **Possible values**: `youtube`, `podcast`, `audiobook`, `dataset`, `lecture`
+- **Default**: `youtube`
+- **Examples**:
+  - `-t podcast` (podcast)
+  - `-t audiobook` (audiobook)
+  - `-t lecture` (lecture)
 
 #### `-d`, `--description`
-- **Описание**: Текстовое описание голоса говорящего
-- **Тип**: строка
-- **Использование**: Полезно для создания датасетов TTS
-- **Формат**: Свободный текст
-- **Пример**: `-d "Женский голос, спокойный тембр, аудиокнига"`
+- **Description**: Text description of the speaker's voice
+- **Type**: string
+- **Usage**: Useful for creating TTS datasets
+- **Format**: Free text
+- **Example**: `-d "Female voice, calm timbre, audiobook"`
 
 #### `-o`, `--output-dir`
-- **Описание**: Директория для сохранения результатов
-- **Тип**: строка
-- **По умолчанию**: Текущая директория (`.`)
-- **Пример**: `-o ./my_dataset`
+- **Description**: Directory to save results
+- **Type**: string
+- **Default**: Current directory (`.`)
+- **Example**: `-o ./my_dataset`
 
-### Параметры LLM нормализации
+### LLM Normalization Parameters
 
 #### `--llm-prompt`
-- **Описание**: Тип промпта для LLM нормализации текста
-- **Тип**: строка
-- **Возможные значения**: `default`, `podcast`, `audiobook`, `lecture`, `custom`
-- **По умолчанию**: `None` (не используется)
-- **Требует**: `LLM_ENABLED=true` в конфигурации
-- **Примеры**:
-  - `--llm-prompt podcast` (нормализация для подкастов)
-  - `--llm-prompt audiobook` (нормализация для аудиокниг)
-  - `--llm-prompt custom` (требует `--llm-custom-prompt`)
+- **Description**: Type of prompt for LLM text normalization
+- **Type**: string
+- **Possible values**: `default`, `podcast`, `audiobook`, `lecture`, `custom`
+- **Default**: `None` (not used)
+- **Requires**: `LLM_ENABLED=true` in configuration
+- **Examples**:
+  - `--llm-prompt podcast` (normalization for podcasts)
+  - `--llm-prompt audiobook` (normalization for audiobooks)
+  - `--llm-prompt custom` (requires `--llm-custom-prompt`)
 
 #### `--llm-custom-prompt`
-- **Описание**: Кастомный системный промпт для LLM
-- **Тип**: строка
-- **Использование**: Используется только с `--llm-prompt custom`
-- **Пример**: `--llm-custom-prompt "Твой кастомный промпт здесь"`
+- **Description**: Custom system prompt for LLM
+- **Type**: string
+- **Usage**: Used only with `--llm-prompt custom`
+- **Example**: `--llm-custom-prompt "Your custom prompt here"`
 
 #### `--disable-llm`
-- **Описание**: Отключить LLM нормализацию даже если она включена в конфиге
-- **Тип**: флаг (без значения)
-- **Пример**: `--disable-llm`
+- **Description**: Disable LLM normalization even if enabled in config
+- **Type**: flag (no value)
+- **Example**: `--disable-llm`
 
-## 🔧 Параметры конфигурации (.env)
+## 🔧 Configuration Parameters (.env)
 
-Конфигурационный файл `.env` содержит настройки подключения к API и LLM. Файл может находиться в нескольких местах в порядке приоритета:
+The configuration file `.env` contains API connection settings and LLM configurations. The file can be located in several places in order of priority:
 
-1. Текущая директория (`./.env`)
+1. Current directory (`./.env`)
 2. `~/.youtube-2-whisper/.env`
 3. `~/.config/youtube-2-whisper/.env`
 
-### Основные параметры
+### Main Parameters
 
 #### `WHISPER_API_URL`
-- **Описание**: URL сервера Whisper API
-- **Тип**: строка
-- **Пример**: `http://localhost:8000/v1`
-- **Требуется**: Да
+- **Description**: URL of the Whisper API server
+- **Type**: string
+- **Example**: `http://localhost:8000/v1`
+- **Required**: Yes
 
 #### `WHISPER_API_KEY`
-- **Описание**: API ключ для доступа к серверу
-- **Тип**: строка
-- **Пример**: `sk-12345`
-- **Требуется**: Да
-- **Заметка**: Для локального сервера можно использовать любой набор символов
+- **Description**: API key for server access
+- **Type**: string
+- **Example**: `sk-12345`
+- **Required**: Yes
+- **Note**: For local server, any string works
 
 #### `WHISPER_MODEL_NAME`
-- **Описание**: Имя модели Whisper для транскрипции
-- **Тип**: строка
-- **По умолчанию**: `stt`
-- **Примеры**:
+- **Description**: Name of the Whisper model for transcription
+- **Type**: string
+- **Default**: `stt`
+- **Examples**:
   - `large-v3`
   - `medium`
   - `small`
 
-### Параметры LLM
+### LLM Parameters
 
 #### `LLM_ENABLED`
-- **Описание**: Включить LLM нормализацию текста
-- **Тип**: булево
-- **Возможные значения**: `true`, `false`
-- **По умолчанию**: `false`
-- **Пример**: `LLM_ENABLED=true`
+- **Description**: Enable LLM text normalization
+- **Type**: boolean
+- **Possible values**: `true`, `false`
+- **Default**: `false`
+- **Example**: `LLM_ENABLED=true`
 
 #### `LLM_MODEL_NAME`
-- **Описание**: Имя LLM модели для нормализации
-- **Тип**: строка
-- **По умолчанию**: `llm`
-- **Пример**: `gpt-4`
+- **Description**: Name of the LLM model for normalization
+- **Type**: string
+- **Default**: `llm`
+- **Example**: `gpt-4`
 
-## 📑 Типы источников
+## 📑 Source Types
 
-Параметр `--type` определяет тип аудио источника и влияет на обработку и метаданные.
+The `--type` parameter defines the type of audio source and affects processing and metadata.
 
-### `youtube` (по умолчанию)
-- **Описание**: Видео с YouTube
-- **Использование**: Для обычных видео, обзоров, туториалов
-- **Пример**: `-t youtube`
+### `youtube` (default)
+- **Description**: YouTube video
+- **Usage**: For regular videos, reviews, tutorials
+- **Example**: `-t youtube`
 
 ### `podcast`
-- **Описание**: Подкаст
-- **Использование**: Для аудио подкастов с диалогами
-- **Особенности**:
-  - Сохраняет разговорный стиль
-  - Удаляет междометия и паузы
-  - Разбивает на абзацы по смысловым блокам
-- **Пример**: `-t podcast`
+- **Description**: Podcast
+- **Usage**: For audio podcasts with dialogues
+- **Features**:
+  - Preserves conversational style
+  - Removes interjections and pauses (um, uh, like)
+  - Breaks into paragraphs by semantic blocks
+- **Example**: `-t podcast`
 
 ### `audiobook`
-- **Описание**: Аудиокнига
-- **Использование**: Для аудио версий книг
-- **Особенности**:
-  - Сохраняет авторский стиль
-  - Правильная пунктуация в диалогах
-  - Сохраняет описательные элементы
-- **Пример**: `-t audiobook`
+- **Description**: Audiobook
+- **Usage**: For audio versions of books
+- **Features**:
+  - Preserves author's style
+  - Proper punctuation in dialogues
+  - Preserves descriptive elements
+- **Example**: `-t audiobook`
 
 ### `dataset`
-- **Описание**: Датасет для обучения
-- **Использование**: Для создания обучающих датасетов
-- **Особенности**:
-  - Минимальная обработка
-  - Сохранение исходной структуры
-- **Пример**: `-t dataset`
+- **Description**: Training dataset
+- **Usage**: For creating training datasets
+- **Features**:
+  - Minimal processing
+  - Preserves original structure
+- **Example**: `-t dataset`
 
 ### `lecture`
-- **Описание**: Лекция
-- **Использование**: Для образовательных видео
-- **Особенности**:
-  - Структурирование по тезисам
-  - Исправление терминов и профессиональной лексики
-  - Удаление повторов
-- **Пример**: `-t lecture`
+- **Description**: Lecture
+- **Usage**: For educational videos
+- **Features**:
+  - Structuring by theses
+  - Correcting terms and professional lexicon
+  - Removing repetitions
+- **Example**: `-t lecture`
 
-## 🤖 Промпты для LLM нормализации
+## 🤖 LLM Normalization Prompts
 
-LLM нормализация преобразует текст от Whisper в более чистый и структурированный вид. Доступны несколько предопределённых промптов:
+LLM normalization transforms text from Whisper into cleaner, more structured form. Several predefined prompts are available:
 
-### `default` (по умолчанию)
-- **Задачи**:
-  - Преобразование чисел в словесную форму
-  - Ёфикация (замена `е` на `ё` при необходимости)
-  - Ударения в омографах
-  - Сохранение исходной пунктуации
-- **Пример**: `5 кг` → `пять килограммов`
+### `default` (default)
+- **Tasks**:
+  - Convert numbers to word form
+  - Yofication (replacing `e` with `ё` when needed)
+  - Stress marks in homographs
+  - Preserve original punctuation
+- **Example**: `5 кг` → `пять килограммов`
 
 ### `podcast`
-- **Задачи**:
-  - Исправление ошибок распознавания
-  - Расстановка пунктуации
-  - Удаление междометий (эм, мм, ну вот)
-  - Сохранение разговорного стиля
-  - Разбиение на абзацы
+- **Tasks**:
+  - Fix recognition errors
+  - Add punctuation
+  - Remove interjections (um, uh, like)
+  - Preserve conversational style
+  - Break into paragraphs
 
 ### `audiobook`
-- **Задачи**:
-  - Исправление ошибок распознавания
-  - Правильная пунктуация и кавычки в диалогах
-  - Сохранение авторского стиля
-  - Разбиение на абзацы
-  - Сохранение описательных элементов
+- **Tasks**:
+  - Fix recognition errors
+  - Proper punctuation and quotes in dialogues
+  - Preserve author's style
+  - Break into paragraphs
+  - Preserve descriptive elements
 
 ### `lecture`
-- **Задачи**:
-  - Исправление терминов и профессиональной лексики
-  - Структурирование по тезисам
-  - Удаление повторов и речевого мусора
-  - Сохранение важных примеров
-  - Добавление разбиения на смысловые блоки
+- **Tasks**:
+  - Fix terms and professional lexicon
+  - Structure by theses
+  - Remove repetitions and speech filler
+  - Preserve important examples
+  - Add semantic block division
 
 ### `custom`
-- **Описание**: Кастомный промпт
-- **Использование**: Требует указания `--llm-custom-prompt`
-- **Пример**:
+- **Description**: Custom prompt
+- **Usage**: Requires `--llm-custom-prompt` to be specified
+- **Example**:
   ```bash
-  --llm-prompt custom --llm-custom-prompt "Твой промпт здесь"
+  --llm-prompt custom --llm-custom-prompt "Your prompt here"
   ```
 
-## ⏱️ Форматы временных меток
+## ⏱️ Time Format Specifications
 
-Для указания начала и конца сегмента поддерживаются несколько форматов:
+Several formats are supported for specifying start and end times:
 
-### Простые форматы
-- `45` - 45 секунд
-- `1:30` - 1 минута 30 секунд
-- `1:20:05` - 1 час 20 минут 5 секунд
+### Simple formats
+- `45` - 45 seconds
+- `1:30` - 1 minute 30 seconds
+- `1:20:05` - 1 hour 20 minutes 5 seconds
 
-### Формат с миллисекундами
-- `1:20:30:500` - 1 час 20 минут 30 секунд 500 миллисекунд
+### Format with milliseconds
+- `1:20:30:500` - 1 hour 20 minutes 30 seconds 500 milliseconds
 
-### Примеры использования
+### Usage examples
 ```bash
-# Сегмент с 1:30 до 5:45
+# Segment from 1:30 to 5:45
 python main.py "URL" 1:30 5:45
 
-# Сегмент с 10 секунд до 25 секунд
+# Segment from 10 seconds to 25 seconds
 python main.py "URL" 10 25
 
-# Весь видео (без указания времени)
+# Entire video (no time specified)
 python main.py "URL"
 ```
 
-## 💡 Примеры использования
+## 💡 Usage Examples
 
-### Базовые примеры
+### Basic examples
 
-#### 1. Полное видео
+#### 1. Entire video
 ```bash
 python main.py "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 ```
 
-#### 2. Фрагмент видео
+#### 2. Video segment
 ```bash
 python main.py "https://www.youtube.com/watch?v=dQw4w9WgXcQ" 1:30 5:45
 ```
 
-#### 3. С указанием языка
+#### 3. With language specification
 ```bash
 python main.py "URL" -l en-US
 ```
 
-### Расширенные примеры
+### Advanced examples
 
-#### 4. С описанием голоса и типом источника
+#### 4. With voice description and source type
 ```bash
-python main.py "URL" --type podcast --description "Мужской голос, низкий тембр"
+python main.py "URL" --type podcast --description "Male voice, low timbre"
 ```
 
-#### 5. С LLM нормализацией
+#### 5. With LLM normalization
 ```bash
 python main.py "URL" --llm-prompt podcast
 ```
 
-#### 6. Сохранение в определённую директорию
+#### 6. Save to specific directory
 ```bash
 python main.py "URL" -o /path/to/output
 ```
 
-#### 7. Кастомный LLM промпт
+#### 7. Custom LLM prompt
 ```bash
-python main.py "URL" --llm-prompt custom --llm-custom-prompt "Твой промпт"
+python main.py "URL" --llm-prompt custom --llm-custom-prompt "Your prompt"
 ```
 
-#### 8. Полный пример с всеми параметрами
+#### 8. Full example with all parameters
 ```bash
 python main.py "https://youtu.be/example" 10 25 \
   -l ru-RU \
   -t podcast \
-  -d "Женский голос, спокойный тембр" \
+  -d "Female voice, calm timbre" \
   -o ./my_dataset \
   --llm-prompt podcast
 ```
 
-## 📊 Выходные данные
+## 📊 Output Format
 
-После обработки создаются два файла:
+Two files are created for each run:
 
 ### 1. `filename.flac`
-- **Формат**: Mono FLAC, 24kHz
-- **Использование**: Готовое аудио для обучения моделей
-- **Особенности**:
-  - Нормализованная громкость (Loudnorm)
-  - Моно канал
-  - Частота 24kHz
+- **Format**: Mono FLAC, 24kHz
+- **Usage**: Ready audio for training models
+- **Features**:
+  - Normalized loudness (Loudnorm)
+  - Mono channel
+  - 24kHz sample rate
 
 ### 2. `filename.json`
-- **Формат**: JSON
-- **Содержимое**:
+- **Format**: JSON
+- **Content**:
   ```json
   {
-    "id": "SHA256 хеш",
+    "id": "SHA256 hash",
     "lang": "ru-RU",
     "text": {
-      "raw": "Исходный текст от Whisper",
-      "normalized": "Нормализованный текст"
+      "raw": "Original text from Whisper",
+      "normalized": "Normalized text"
     },
     "source": {
       "type": "youtube",
@@ -335,42 +338,42 @@ python main.py "https://youtu.be/example" 10 25 \
       }
     },
     "speaker": {
-      "id": "CANAL_ID",
-      "voice_description": "Описание голоса"
+      "id": "CHANNEL_ID",
+      "voice_description": "Voice description"
     }
   }
   ```
 
-## 🛠️ Устранение неполадок
+## 🛠️ Troubleshooting
 
-### Общие проблемы
+### Common issues
 
-#### Ошибка: `WHISPER_API_URL not specified`
-- **Причина**: Не найден файл `.env` или отсутствуют обязательные параметры
-- **Решение**:
-  1. Создайте `.env` файл в текущей директории
-  2. Укажите `WHISPER_API_URL` и `WHISPER_API_KEY`
-  3. Запустите скрипт снова
+#### Error: `WHISPER_API_URL not specified`
+- **Cause**: `.env` file not found or missing required parameters
+- **Solution**:
+  1. Create `.env` file in current directory
+  2. Specify `WHISPER_API_URL` and `WHISPER_API_KEY`
+  3. Run script again
 
-#### Ошибка: `FFmpeg not found`
-- **Причина**: Не установлен FFmpeg
-- **Решение**: Установите FFmpeg через системный пакетный менеджер
+#### Error: `FFmpeg not found`
+- **Cause**: FFmpeg not installed
+- **Solution**: Install FFmpeg using system package manager
 
-#### Конфликты при merge
-- **Причина**: Разные изменения в одном файле
-- **Решение**:
-  1. Откройте конфликтующие файлы
-  2. Удалите метки конфликтов (`<<<<<<<`, `=======`, `>>>>>>>`)
-  3. Сохраните файл
-  4. Завершите merge с `git add` и `git commit`
+#### Merge conflicts
+- **Cause**: Different changes in the same file
+- **Solution**:
+  1. Open conflicting files
+  2. Remove conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`)
+  3. Save file
+  4. Complete merge with `git add` and `git commit`
 
-## 📝 Заметки
+## 📝 Notes
 
-- **Порядок приоритета конфигурации**: Системные переменные > `.env` в текущей директории > `~/.youtube-2-whisper/.env` > `~/.config/youtube-2-whisper/.env`
-- **LLM нормализация**: Требует отдельной LLM модели и может увеличивать время обработки
-- **Аудио обработка**: Все аудио автоматически нормализуется по громкости и конвертируется в FLAC 24kHz
-- **Уникальность**: Каждый сегмент получает уникальный SHA256 хеш для предотвращения дублей
+- **Configuration priority**: System variables > `.env` in current directory > `~/.youtube-2-whisper/.env` > `~/.config/youtube-2-whisper/.env`
+- **LLM normalization**: Requires separate LLM model and may increase processing time
+- **Audio processing**: All audio is automatically normalized for loudness and converted to FLAC 24kHz
+- **Uniqueness**: Each segment gets unique SHA256 hash to prevent duplicates
 
 ---
 
-**Последнее обновление**: 2025-12-17
+**Last updated**: 2025-12-17
