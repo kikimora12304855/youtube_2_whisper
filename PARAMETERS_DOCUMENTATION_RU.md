@@ -244,13 +244,13 @@ LLM нормализация преобразует текст от Whisper в �
 ### Примеры использования
 ```bash
 # Сегмент с 1:30 до 5:45
-youtube-2-whisper "URL" 1:30 5:45
+youtube-2-whisper "URL or VIDEO_ID" 1:30 5:45
 
 # Сегмент с 10 секунд до 25 секунд
-youtube-2-whisper "URL" 10 25
+youtube-2-whisper "URL or VIDEO_ID" 10 25
 
 # Весь видео (без указания времени)
-youtube-2-whisper "URL"
+youtube-2-whisper "URL or VIDEO_ID"
 ```
 
 ## 💡 Примеры использования
@@ -259,44 +259,44 @@ youtube-2-whisper "URL"
 
 #### 1. Полное видео
 ```bash
-youtube-2-whisper "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+youtube-2-whisper "URL or VIDEO_ID"
 ```
 
 #### 2. Фрагмент видео
 ```bash
-youtube-2-whisper "https://www.youtube.com/watch?v=dQw4w9WgXcQ" 1:30 5:45
+youtube-2-whisper "URL or VIDEO_ID" 1:30 5:45
 ```
 
 #### 3. С указанием языка
 ```bash
-youtube-2-whisper "URL" -l en-US
+youtube-2-whisper "URL or VIDEO_ID" -l en-US
 ```
 
 ### Расширенные примеры
 
 #### 4. С описанием голоса и типом источника
 ```bash
-youtube-2-whisper "URL" --type podcast --description "Мужской голос, низкий тембр"
+youtube-2-whisper "URL or VIDEO_ID" --type podcast --description "Мужской голос, низкий тембр"
 ```
 
 #### 5. С LLM нормализацией
 ```bash
-youtube-2-whisper "URL" --llm-prompt podcast
+youtube-2-whisper "URL or VIDEO_ID" --llm-prompt podcast
 ```
 
 #### 6. Сохранение в определённую директорию
 ```bash
-youtube-2-whisper "URL" -o /path/to/output
+youtube-2-whisper "URL or VIDEO_ID" -o /path/to/output
 ```
 
 #### 7. Кастомный LLM промпт
 ```bash
-youtube-2-whisper "URL" --llm-prompt custom --llm-custom-prompt "Твой промпт"
+youtube-2-whisper "URL or VIDEO_ID" --llm-prompt custom --llm-custom-prompt "Твой промпт"
 ```
 
 #### 8. Полный пример с всеми параметрами
 ```bash
-youtube-2-whisper "https://youtu.be/example" 10 25 \
+youtube-2-whisper "URL or VIDEO_ID" 10 25 \
   -l ru-RU \
   -t podcast \
   -d "Женский голос, спокойный тембр" \

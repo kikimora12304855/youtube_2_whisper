@@ -91,7 +91,7 @@ Run the tool via the command line.
 ### Syntax
 
 ```bash
-youtube-2-whisper URL [START] [END] [OPTIONS]
+youtube-2-whisper [URL or VIDEO_ID] [START] [END] [OPTIONS]
 ```
 
 ### Arguments
@@ -115,24 +115,24 @@ youtube-2-whisper URL [START] [END] [OPTIONS]
 
 **1. Download and transcribe the entire video:**
 ```bash
-youtube-2-whisper "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+youtube-2-whisper "URL or VIDEO_ID"
 ```
 
 **2. Download a fragment from the 1st to the 3rd minute:**
 ```bash
-youtube-2-whisper "https://www.youtube.com/watch?v=dQw4w9WgXcQ" 1:00 3:00
+youtube-2-whisper "URL or VIDEO_ID" 1:00 3:00
 ```
 
 **3. Download a fragment specifying a folder and voice description:**
 ```bash
-youtube-2-whisper "https://youtu.be/example" 10 25 \
+youtube-2-whisper "URL or VIDEO_ID" 10 25 \
   -o ./my_dataset \
   -d "Female voice, calm timbre, audiobook"
 ```
 
 **4. Using LLM normalization with custom parameters:**
 ```bash
-youtube-2-whisper "https://youtu.be/example" \
+youtube-2-whisper "URL or VIDEO_ID" \
   --llm-temperature 0.7 \
   --top-p 0.8
 ```
@@ -191,4 +191,4 @@ If LLM returns empty responses, the script falls back to simple text normalizati
 
 ## 📝 License
 
-- [GPL-3.0 license](https://github.com/kikimora12304855/youtube_2_whisper#GPL-3.0-1-ov-file)
+- [GPL-3.0 license](LICENSE)

@@ -12,7 +12,6 @@ This document provides comprehensive information about all parameters, arguments
 6. [Usage Examples](#usage-examples)
 7. [Output Format](#output-format)
 8. [Troubleshooting](#troubleshooting)
-9. [Notes](#notes)
 
 ## 🎯 Command-Line Arguments
 
@@ -20,13 +19,14 @@ This document provides comprehensive information about all parameters, arguments
 
 #### `URL` (required)
 - **Description**: Video link from YouTube or other supported platforms (Vimeo, SoundCloud, etc.)
-- **Format**: `https://youtube.com/watch?v=VIDEO_ID` or `https://youtu.be/VIDEO_ID`
-- **Example**: `"https://www.youtube.com/watch?v=dQw4w9WgXcQ"`
+- **Format**: `https://youtube.com/watch?v=VIDEO_ID` or `VIDEO_ID`
+- **Example**: `"https://www.youtube.com/watch?v=dQw4w9WgXcQ"` or `dQw4w9WgXcQ`
 
 #### `START` (optional)
 - **Description**: Start time of the segment to download
 - **Formats**:
   - `45` (seconds)
+  - `45.5` (seconds.milliseconds)
   - `1:30` (minutes:seconds)
   - `1:20:05` (hours:minutes:seconds)
   - `1:20:30:500` (hours:minutes:seconds:milliseconds)
@@ -116,7 +116,7 @@ The configuration file `.env` contains API connection settings and LLM configura
 - **Type**: string
 - **Example**: `sk-12345`
 - **Required**: Yes
-- **Note**: For local server, any string works
+- **Note**: For local server, any string works.
 
 #### `WHISPER_MODEL_NAME`
 - **Description**: Name of the Whisper model for transcription
@@ -236,22 +236,21 @@ Several formats are supported for specifying start and end times:
 
 ### Simple formats
 - `45` - 45 seconds
+- `45.5` - 45 seconds 500 milliseconds
 - `1:30` - 1 minute 30 seconds
 - `1:20:05` - 1 hour 20 minutes 5 seconds
-
-### Format with milliseconds
 - `1:20:30:500` - 1 hour 20 minutes 30 seconds 500 milliseconds
 
 ### Usage examples
 ```bash
 # Segment from 1:30 to 5:45
-python main.py "URL" 1:30 5:45
+youtube-2-whisper "URL or VIDEO_ID" 1:30 5:45
 
 # Segment from 10 seconds to 25 seconds
-python main.py "URL" 10 25
+youtube-2-whisper "URL or VIDEO_ID" 10 25
 
 # Entire video (no time specified)
-python main.py "URL"
+youtube-2-whisper "URL or VIDEO_ID"
 ```
 
 ## 💡 Usage Examples
@@ -260,44 +259,44 @@ python main.py "URL"
 
 #### 1. Entire video
 ```bash
-python main.py "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+youtube-2-whisper "URL or VIDEO_ID"
 ```
 
 #### 2. Video segment
 ```bash
-python main.py "https://www.youtube.com/watch?v=dQw4w9WgXcQ" 1:30 5:45
+youtube-2-whisper "URL or VIDEO_ID" 1:30 5:45
 ```
 
 #### 3. With language specification
 ```bash
-python main.py "URL" -l en-US
+youtube-2-whisper "URL or VIDEO_ID" -l en-US
 ```
 
 ### Advanced examples
 
 #### 4. With voice description and source type
 ```bash
-python main.py "URL" --type podcast --description "Male voice, low timbre"
+youtube-2-whisper "URL or VIDEO_ID" --type podcast --description "Male voice, low timbre"
 ```
 
 #### 5. With LLM normalization
 ```bash
-python main.py "URL" --llm-prompt podcast
+youtube-2-whisper "URL or VIDEO_ID" --llm-prompt podcast
 ```
 
 #### 6. Save to specific directory
 ```bash
-python main.py "URL" -o /path/to/output
+youtube-2-whisper "URL or VIDEO_ID" -o /path/to/output
 ```
 
 #### 7. Custom LLM prompt
 ```bash
-python main.py "URL" --llm-prompt custom --llm-custom-prompt "Your prompt"
+youtube-2-whisper "URL or VIDEO_ID" --llm-prompt custom --llm-custom-prompt "Your prompt"
 ```
 
 #### 8. Full example with all parameters
 ```bash
-python main.py "https://youtu.be/example" 10 25 \
+youtube-2-whisper "URL or VIDEO_ID" 10 25 \
   -l ru-RU \
   -t podcast \
   -d "Female voice, calm timbre" \
@@ -358,21 +357,6 @@ Two files are created for each run:
 #### Error: `FFmpeg not found`
 - **Cause**: FFmpeg not installed
 - **Solution**: Install FFmpeg using system package manager
-
-#### Merge conflicts
-- **Cause**: Different changes in the same file
-- **Solution**:
-  1. Open conflicting files
-  2. Remove conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`)
-  3. Save file
-  4. Complete merge with `git add` and `git commit`
-
-## 📝 Notes
-
-- **Configuration priority**: System variables > `.env` in current directory > `~/.youtube-2-whisper/.env` > `~/.config/youtube-2-whisper/.env`
-- **LLM normalization**: Requires separate LLM model and may increase processing time
-- **Audio processing**: All audio is automatically normalized for loudness and converted to FLAC 24kHz
-- **Uniqueness**: Each segment gets unique SHA256 hash to prevent duplicates
 
 ---
 

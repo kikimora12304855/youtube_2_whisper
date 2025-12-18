@@ -115,24 +115,24 @@ youtube-2-whisper URL [START] [END] [OPTIONS]
 
 **1. Скачать и транскрибировать видео целиком:**
 ```bash
-youtube-2-whisper "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+youtube-2-whisper "URL or VIDEO_ID"
 ```
 
 **2. Скачать фрагмент с 1-й по 3-ю минуту:**
 ```bash
-youtube-2-whisper "https://www.youtube.com/watch?v=dQw4w9WgXcQ" 1:00 3:00
+youtube-2-whisper "URL or VIDEO_ID" 1:00 3:00
 ```
 
 **3. Скачать фрагмент с указанием папки и описания голоса:**
 ```bash
-youtube-2-whisper "https://youtu.be/example" 10 25 \
+youtube-2-whisper "URL or VIDEO_ID" 10 25 \
   -o ./my_dataset \
   -d "Женский голос, спокойный тембр, аудиокнига"
 ```
 
 **4. Использование LLM нормализации с кастомными параметрами:**
 ```bash
-youtube-2-whisper "https://youtu.be/example" \
+youtube-2-whisper "URL or VIDEO_ID" \
   --llm-temperature 0.7 \
   --top-p 0.8
 ```
@@ -191,4 +191,4 @@ WHISPER_MODEL_NAME=large-v3
 
 ## 📝 Лицензия
 
-- [GPL-3.0 license](https://github.com/kikimora12304855/youtube_2_whisper#GPL-3.0-1-ov-file)
+- [GPL-3.0 license](LICENSE)
