@@ -28,26 +28,26 @@
 
 ### Установка зависимостей
 
-#### Устанвка uv
+#### Установка uv
 Этот скрипт автоматически скачивает нужный бинарный файл `uv` и добавляет его в ваш путь.
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
 
-#### Устанвка FFmpeg
-Утановка для Ubuntu
+#### Установка FFmpeg
+Установка для Ubuntu
 ```bash
 sudo apt update
 sudo apt install ffmpeg
 ```
 
-Утановка для Arch
+Установка для Arch
 ```bash
 sudo pacman -Syu
 sudo pacman -S ffmpeg
 ```
 
-Утановка для MacOS
+Установка для MacOS
 ```bash
 brew install ffmpeg
 ```

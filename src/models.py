@@ -1,5 +1,5 @@
-from dataclasses import dataclass, asdict
-from typing import Optional, Dict, Any
+from dataclasses import dataclass, asdict, field
+from typing import Optional, Dict, Any, Literal
 import hashlib
 
 
