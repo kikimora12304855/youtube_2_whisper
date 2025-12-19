@@ -53,7 +53,7 @@ class LLMNormalizer:
     """
 
     # Системный промпт по умолчанию для нормализации
-    DEFAULT_SYSTEM_PROMPT = '''
+    DEFAULT_SYSTEM_PROMPT = """
 ## ЗАДАЧА
 Я выполняю нормализацию русскоязычного текста для последующего синтеза речи (TTS).
 
@@ -90,7 +90,8 @@ class LLMNormalizer:
 
 **Мой ответ:**
 `В две тысячи двадцать четвёртом год+у я купил два замк+а для д+ома на +улице Л+енина п+ять а за сто д+олларов. Всё ещё жду доставку.`
-''',  # noqa: E501
+"""
+    system_prompt: str
 
     def __init__(
         self,
@@ -118,8 +119,10 @@ class LLMNormalizer:
 
         """
         self.client = OpenAI(api_key=api_key, base_url=api_url)
+        self.system_prompt = (
+            system_prompt if system_prompt is not None else self.DEFAULT_SYSTEM_PROMPT
+        )
         self.model_name = model_name
-        self.system_prompt = system_prompt or self.DEFAULT_SYSTEM_PROMPT
         self.temperature = temperature
         self.top_p = top_p
 

@@ -1,5 +1,6 @@
 import re
 from typing import Union
+from typing import Optional
 
 
 # Константы
@@ -152,7 +153,9 @@ def format_time(seconds: float) -> str:
     return f"{hours:02d}:{minutes:02d}:{secs:02d}"
 
 
-def validate_time_range(start: float, end: float, max_duration: float = None) -> bool:
+def validate_time_range(
+    start: float, end: float, max_duration: Optional[float] = None
+) -> bool:
     """
     Валидирует временной диапазон.
 

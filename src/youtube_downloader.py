@@ -46,7 +46,7 @@ class AudioDownloader:
         """
         ydl_opts = {"quiet": self.quiet, "no_warnings": True}
 
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:  # type: ignore[arg-type]
             info = ydl.extract_info(video_url, download=False)
 
             # Санитизация ID видео
@@ -57,7 +57,7 @@ class AudioDownloader:
 
             return VideoInfo(
                 video_id=video_id,
-                duration=info.get("duration", 0),
+                duration=float(info.get("duration") or 0),
                 speaker_id=speaker_id,
                 channel_name=info.get("channel", "unknown"),
             )
@@ -79,9 +79,9 @@ class AudioDownloader:
         Raises:
             Exception: При ошибке загрузки
         """
-        ydl_opts = self._build_ydl_options(output_path, segment)
+        ydl_opts: Dict[str, Any] = self._build_ydl_options(output_path, segment)
 
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:  # type: ignore[arg-type]
             ydl.download([video_url])
 
         # Проверяем создание файла
@@ -121,7 +121,8 @@ class AudioDownloader:
         # Если указан сегмент - загружаем только его
         if segment is not None:
             opts["download_ranges"] = download_range_func(
-                None, [(segment.start, segment.end)]
+                [],
+                [(segment.start, segment.end)],  # type: ignore[arg-type]
             )
             opts["force_keyframes_at_cuts"] = True
         else:
