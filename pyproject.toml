@@ -20,10 +20,10 @@ venv = ".venv"
 pythonVersion = "3.12"
 
 [project.scripts]
-youtube-2-whisper = "main:main"
-
-[tool.setuptools]
-py-modules = ["main"]
+youtube-2-whisper = "youtube_2_whisper.main:main"
 
 [tool.setuptools.package-dir]
 "" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]

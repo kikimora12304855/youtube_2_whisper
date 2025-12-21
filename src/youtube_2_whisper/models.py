@@ -1,5 +1,5 @@
-from dataclasses import dataclass, asdict
 import hashlib
+from dataclasses import dataclass, asdict
 
 
 @dataclass

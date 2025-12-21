@@ -1,10 +1,10 @@
 import json
 from pathlib import Path
 
-from models import VideoInfo, TimeSegment, TranscriptionResult
-from youtube_downloader import AudioDownloader
-from whisper_client import TranscriptionService
-from utils import parse_time, validate_time_range
+from youtube_2_whisper.models import VideoInfo, TimeSegment, TranscriptionResult
+from youtube_2_whisper.youtube_downloader import AudioDownloader
+from youtube_2_whisper.whisper_client import TranscriptionService
+from youtube_2_whisper.utils import parse_time, validate_time_range
 
 
 class VideoProcessor:

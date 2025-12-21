@@ -1,7 +1,7 @@
 from pathlib import Path
 from openai import OpenAI
 
-from utils import normalize_text_simple
+from youtube_2_whisper.utils import normalize_text_simple
 
 
 class WhisperClient:

@@ -1,9 +1,9 @@
-from pathlib import Path
 import yt_dlp
+from pathlib import Path
 from yt_dlp.utils import download_range_func
 
-from models import VideoInfo, TimeSegment
-from utils import sanitize_filename
+from youtube_2_whisper.models import VideoInfo, TimeSegment
+from youtube_2_whisper.utils import sanitize_filename
 
 
 class AudioDownloader:

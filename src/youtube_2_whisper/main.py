@@ -9,11 +9,11 @@ import sys
 from argparse import ArgumentParser, RawTextHelpFormatter
 from pathlib import Path
 
-from config import config
-from youtube_downloader import AudioDownloader
-from whisper_client import WhisperClient, LLMNormalizer, TranscriptionService
-from whisper_client import PODCAST_PROMPT, AUDIOBOOK_PROMPT, LECTURE_PROMPT
-from processor import VideoProcessor
+from youtube_2_whisper.config import config
+from youtube_2_whisper.youtube_downloader import AudioDownloader
+from youtube_2_whisper.whisper_client import WhisperClient, LLMNormalizer, TranscriptionService
+from youtube_2_whisper.whisper_client import PODCAST_PROMPT, AUDIOBOOK_PROMPT, LECTURE_PROMPT
+from youtube_2_whisper.processor import VideoProcessor
 
 @dataclass
 class CLIArgs:
