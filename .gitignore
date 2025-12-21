@@ -1,5 +1,7 @@
 .goose/
 .python-version
+*.flac
+*.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

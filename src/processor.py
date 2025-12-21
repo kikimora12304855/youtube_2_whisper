@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from typing import Optional
 
 from models import VideoInfo, TimeSegment, TranscriptionResult
 from youtube_downloader import AudioDownloader
@@ -18,7 +17,7 @@ class VideoProcessor:
         downloader: AudioDownloader,
         transcription_service: TranscriptionService,
         output_dir: Path,
-    ):
+    ) -> None:
         """
         Инициализация процессора.
 
@@ -27,9 +26,9 @@ class VideoProcessor:
             transcription_service: Сервис транскрипции
             output_dir: Директория для сохранения результатов
         """
-        self.downloader = downloader
-        self.transcription_service = transcription_service
-        self.output_dir = output_dir
+        self.downloader: AudioDownloader = downloader
+        self.transcription_service: TranscriptionService = transcription_service
+        self.output_dir: Path = output_dir
 
         # Создаем директорию если не существует
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -37,12 +36,12 @@ class VideoProcessor:
     def process(
         self,
         video_url: str,
-        start_str: Optional[str] = None,
-        end_str: Optional[str] = None,
+        start_str: str | None = None,
+        end_str: str | None = None,
         lang: str = "ru-RU",
         source_type: str = "youtube",
-        voice_desc: Optional[str] = None,
-    ) -> Optional[Path]:
+        voice_desc: str | None = None,
+    ) -> Path | None:
         """
         Обрабатывает видео: загрузка аудио, транскрипция, сохранение.
 
@@ -55,12 +54,12 @@ class VideoProcessor:
             voice_desc: Описание голоса
 
         Returns:
-            Optional[Path]: Путь к JSON файлу с результатом или None при ошибке
+            Path | None: Путь к JSON файлу с результатом или None при ошибке
         """
         # Шаг 1: Получение информации о видео
         print("🔍 Получаю информацию о видео...")
         try:
-            video_info = self.downloader.get_video_info(video_url)
+            video_info: VideoInfo = self.downloader.get_video_info(video_url)
             print(f"📺 Канал: {video_info.channel_name} (ID: {video_info.speaker_id})")
         except Exception as e:
             print(f"❌ Не удалось получить информацию о видео: {e}")
@@ -83,21 +82,21 @@ class VideoProcessor:
             )
 
         # Шаг 3: Формирование путей к файлам
-        filename_base = AudioDownloader.generate_filename(
-            video_info, None if is_full_video else segment, start_str, end_str
+        filename_base: str = AudioDownloader.generate_filename(
+            video_info=video_info, segment=None if is_full_video else segment, start_str=start_str, end_str=end_str
         )
 
-        audio_path = self.output_dir / filename_base
-        flac_path = self.output_dir / f"{filename_base}.flac"
-        json_path = self.output_dir / f"{filename_base}.json"
+        audio_path: Path = self.output_dir / filename_base
+        flac_path: Path = self.output_dir / f"{filename_base}.flac"
+        json_path: Path = self.output_dir / f"{filename_base}.json"
 
         # Шаг 4: Загрузка аудио
         print(f"⏳ Скачиваю аудио: {flac_path.name}")
         print("   (24kHz моно, loudnorm, FLAC)")
 
         try:
-            self.downloader.download_audio(
-                video_url, audio_path, None if is_full_video else segment
+           _ = self.downloader.download_audio(
+                video_url=video_url, output_path=audio_path, segment=None if is_full_video else segment
             )
         except Exception as e:
             print(f"❌ Ошибка загрузки: {e}")
@@ -105,7 +104,8 @@ class VideoProcessor:
 
         # Шаг 5: Транскрипция и нормализация
         try:
-            raw_text, normalized_text = self.transcription_service.process(flac_path)
+            raw_text, normalized_text = self.transcription_service.process(
+                audio_file_path=flac_path)
         except Exception as e:
             print(f"❌ Ошибка транскрипции: {e}")
             return None
@@ -129,8 +129,8 @@ class VideoProcessor:
         return json_path
 
     def _parse_time_segment(
-        self, start_str: Optional[str], end_str: Optional[str], video_info: VideoInfo
-    ) -> tuple[Optional[TimeSegment], bool]:
+        self, start_str: str | None, end_str: str | None, video_info: VideoInfo
+    ) -> tuple[TimeSegment | None, bool]:
         """
         Парсит временной сегмент из строк.
 
@@ -149,8 +149,8 @@ class VideoProcessor:
 
         # Парсим время
         try:
-            start_time = parse_time(start_str)
-            end_time = parse_time(end_str)
+            start_time: float = parse_time(time_parse_str=start_str)
+            end_time: float = parse_time(time_parse_str=end_str)
         except ValueError as e:
             print(f"❌ Ошибка парсинга времени: {e}")
             return None, False
@@ -178,7 +178,7 @@ class VideoProcessor:
     def _print_result(
         self,
         raw_text: str,
-        normalized_text: Optional[str],
+        normalized_text: str | None,
         json_path: Path,
         speaker_id: str,
     ) -> None:

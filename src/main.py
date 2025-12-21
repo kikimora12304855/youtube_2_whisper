@@ -4,10 +4,10 @@
 Точка входа в программу с CLI интерфейсом.
 """
 
+from dataclasses import dataclass
 import sys
-import argparse
+from argparse import ArgumentParser, RawTextHelpFormatter
 from pathlib import Path
-from typing import Optional
 
 from config import config
 from youtube_downloader import AudioDownloader
@@ -15,17 +15,32 @@ from whisper_client import WhisperClient, LLMNormalizer, TranscriptionService
 from whisper_client import PODCAST_PROMPT, AUDIOBOOK_PROMPT, LECTURE_PROMPT
 from processor import VideoProcessor
 
+@dataclass
+class CLIArgs:
+    url: str
+    start: str | None
+    end: str | None
+    lang: str
+    type: str
+    description: str | None
+    temperature: float
+    top_p: float
+    output_dir: str
+    llm_prompt: str | None
+    llm_custom_prompt: str | None
+    disable_llm: bool
 
-def create_parser() -> argparse.ArgumentParser:
+
+def create_parser() -> ArgumentParser:
     """
     Создает парсер аргументов командной строки.
 
     Returns:
         argparse.ArgumentParser: Настроенный парсер
     """
-    parser = argparse.ArgumentParser(
+    parser: ArgumentParser = ArgumentParser(
         description="🎙️  youtube-2-whisper - Транскрипция видео через Whisper API",
-        formatter_class=argparse.RawTextHelpFormatter,
+        formatter_class=RawTextHelpFormatter,
         epilog="""
 Примеры использования:
 
@@ -47,23 +62,23 @@ def create_parser() -> argparse.ArgumentParser:
     )
 
     # Обязательные аргументы
-    parser.add_argument(
+    _ = parser.add_argument(
         "url", help="URL видео (YouTube, и другие платформы поддерживаемые yt-dlp)"
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "start",
         nargs="?",
         default=None,
         help="Время начала фрагмента (опционально)\nФорматы: 45, 1:30, 1:2:30, 1:2:30:500",
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "end", nargs="?", default=None, help="Время конца фрагмента (опционально)"
     )
 
     # Опциональные параметры
-    parser.add_argument(
+    _ = parser.add_argument(
         "-l",
         "--lang",
         type=str,
@@ -71,7 +86,7 @@ def create_parser() -> argparse.ArgumentParser:
         help="Язык аудио (по умолчанию: ru-RU)",
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "-t",
         "--type",
         type=str,
@@ -80,25 +95,25 @@ def create_parser() -> argparse.ArgumentParser:
         help="Тип источника аудио (по умолчанию: youtube)",
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "-d", "--description", type=str, default=None, help="Описание голоса говорящего"
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "--temperature",
         type=float,
         default=0.3,
         help="Температура генерации (0.0-2.0, по умолчанию: 0.3)",
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "--top-p",
         type=float,
         default=0.9,
         help="Top-P sampling (0.0-1.0, по умолчанию: 0.9)",
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "-o",
         "--output-dir",
         type=str,
@@ -107,7 +122,7 @@ def create_parser() -> argparse.ArgumentParser:
     )
 
     # Параметры LLM нормализации
-    parser.add_argument(
+    _ = parser.add_argument(
         "--llm-prompt",
         type=str,
         choices=["default", "podcast", "audiobook", "lecture", "custom"],
@@ -115,14 +130,14 @@ def create_parser() -> argparse.ArgumentParser:
         help="Тип промпта для LLM нормализации (требует LLM_ENABLED=true в .env)",
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "--llm-custom-prompt",
         type=str,
         default=None,
         help="Кастомный системный промпт для LLM (используется с --llm-prompt custom)",
     )
 
-    parser.add_argument(
+    _ = parser.add_argument(
         "--disable-llm",
         action="store_true",
         help="Отключить LLM нормализацию даже если включена в конфиге",
@@ -131,7 +146,7 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def setup_llm_normalizer(args: argparse.Namespace) -> Optional[LLMNormalizer]:
+def setup_llm_normalizer(args: CLIArgs) -> LLMNormalizer | None:
     """
     Настраивает LLM нормализатор на основе аргументов.
 
@@ -139,14 +154,14 @@ def setup_llm_normalizer(args: argparse.Namespace) -> Optional[LLMNormalizer]:
         args: Аргументы командной строки
 
     Returns:
-        Optional[LLMNormalizer]: Настроенный нормализатор или None
+        LLMNormalizer | None: Настроенный нормализатор или None
     """
     # Проверяем что LLM включен
     if args.disable_llm or not config.llm_enabled:
         return None
 
     # Определяем промпт
-    prompt_map = {
+    prompt_map: dict[str, str | None] = {
         "podcast": PODCAST_PROMPT,
         "audiobook": AUDIOBOOK_PROMPT,
         "lecture": LECTURE_PROMPT,
@@ -154,7 +169,8 @@ def setup_llm_normalizer(args: argparse.Namespace) -> Optional[LLMNormalizer]:
         "default": None,  # Использует DEFAULT_SYSTEM_PROMPT
     }
 
-    system_prompt = None
+    # Создаем нормаsystem_prompt: str | None = None
+    system_prompt: str | None = None
     if args.llm_prompt:
         system_prompt = prompt_map.get(args.llm_prompt)
 
@@ -162,8 +178,8 @@ def setup_llm_normalizer(args: argparse.Namespace) -> Optional[LLMNormalizer]:
             print("⚠️  --llm-prompt custom требует --llm-custom-prompt")
             return None
 
-    # Создаем нормализатор
-    normalizer = LLMNormalizer(
+
+    normalizer: LLMNormalizer = LLMNormalizer(
         api_url=config.whisper_api_url,
         api_key=config.whisper_api_key,
         top_p=config.llm_top_p,
@@ -175,15 +191,31 @@ def setup_llm_normalizer(args: argparse.Namespace) -> Optional[LLMNormalizer]:
     return normalizer
 
 
-def main():
+def main() -> None:
     """Точка входа в программу."""
 
     # Загрузка конфигурации
     config.load()
 
     # Парсинг аргументов
-    parser = create_parser()
-    args = parser.parse_args()
+    parser: ArgumentParser = create_parser()
+    ns = parser.parse_args(namespace=CLIArgs)
+
+    args = CLIArgs(
+        url=ns.url,
+        start=ns.start,
+        end=ns.end,
+        lang=ns.lang,
+        type=ns.type,
+        description=ns.description,
+        temperature=ns.temperature,
+        top_p=ns.top_p,
+        output_dir=ns.output_dir,
+        llm_prompt=ns.llm_prompt,
+        llm_custom_prompt=ns.llm_custom_prompt,
+        disable_llm=ns.disable_llm,
+    )
+
 
     # Вывод информации о запуске
     print("\n" + "=" * 60)
@@ -194,7 +226,7 @@ def main():
         print(f"⏱️  Сегмент: {args.start} → {args.end}")
     print(f"🌍 Язык: {args.lang}")
     print(f"📁 Выходная директория: {args.output_dir}")
-    print("=" * 60 + "\n")
+    print("=" * 60 + f"\n")
 
     # Инициализация компонентов
     try:
@@ -209,7 +241,7 @@ def main():
         )
 
         # LLM нормализатор (опционально)
-        llm = setup_llm_normalizer(args)
+        llm: LLMNormalizer | None = setup_llm_normalizer(args)
 
         # Сервис транскрипции
         transcription_service = TranscriptionService(

@@ -1,5 +1,4 @@
 from dataclasses import dataclass, asdict
-from typing import Optional, Dict, Any
 import hashlib
 
 
@@ -12,7 +11,7 @@ class VideoInfo:
     speaker_id: str  # ID канала/источника (используется как speaker_id)
     channel_name: str  # Название канала
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, object]:
         """Преобразует объект в словарь."""
         return asdict(self)
 
@@ -33,7 +32,7 @@ class TimeSegment:
         """Проверяет валидность временного сегмента."""
         return self.start >= 0 and self.end > self.start
 
-    def to_dict(self) -> Dict[str, float]:
+    def to_dict(self) -> dict[str, float]:
         """Преобразует сегмент в словарь."""
         return {"start": self.start, "end": self.end, "duration_sec": self.duration}
 
@@ -43,9 +42,9 @@ class TranscriptionText:
     """Текст транскрипции в разных форматах."""
 
     raw: str  # Исходный текст от Whisper
-    normalized: Optional[str] = None  # Нормализованный текст (простой или через LLM)
+    normalized: str | None = None  # Нормализованный текст (простой или через LLM)
 
-    def to_dict(self) -> Dict[str, str]:
+    def to_dict(self) -> dict[str, str]:
         """Преобразует объект в словарь."""
         return {"raw": self.raw, "normalized": self.normalized or self.raw}
 
@@ -65,7 +64,7 @@ class Speaker:
             "тембр — яркость: unknown, шероховатость: unknown, придыхательность: unknown."
         )
 
-    def to_dict(self) -> Dict[str, str]:
+    def to_dict(self) -> dict[str, str]:
         """Преобразует объект в словарь."""
         return asdict(self)
 
@@ -78,7 +77,7 @@ class Source:
     id: str  # ID источника (video_id)
     segment: TimeSegment  # Временной сегмент
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, object]:
         """Преобразует объект в словарь."""
         return {"type": self.type, "id": self.id, "segment_sec": self.segment.to_dict()}
 
@@ -106,15 +105,15 @@ class TranscriptionResult:
         Returns:
             str: SHA256 хеш строки "{video_id}:{start_time}:{end_time}"
         """
-        hash_input = f"{video_id}:{start_time}:{end_time}"
-        return hashlib.sha256(hash_input.encode("utf-8")).hexdigest()
+        hash_input: str = f"{video_id}:{start_time}:{end_time}"
+        return hashlib.sha256(string=hash_input.encode(encoding="utf-8")).hexdigest()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, object]:
         """
         Преобразует результат в словарь для JSON сериализации.
 
         Returns:
-            Dict: Структурированный словарь с результатами
+            dict: Структурированный словарь с результатами
         """
         return {
             "id": self.id,
@@ -132,8 +131,8 @@ class TranscriptionResult:
         raw_text: str,
         lang: str,
         source_type: str,
-        voice_desc: Optional[str] = None,
-        normalized_text: Optional[str] = None,
+        voice_desc: str | None = None,
+        normalized_text: str | None = None,
     ) -> "TranscriptionResult":
         """
         Фабричный метод для создания результата транскрипции.
@@ -150,13 +149,13 @@ class TranscriptionResult:
         Returns:
             TranscriptionResult: Новый объект результата
         """
-        result_id = cls.generate_id(video_info.video_id, segment.start, segment.end)
+        result_id: str = cls.generate_id(video_info.video_id, start_time=segment.start, end_time=segment.end)
 
-        text = TranscriptionText(raw=raw_text, normalized=normalized_text)
+        text: TranscriptionText = TranscriptionText(raw=raw_text, normalized=normalized_text)
 
-        source = Source(type=source_type, id=video_info.video_id, segment=segment)
+        source: Source = Source(type=source_type, id=video_info.video_id, segment=segment)
 
-        speaker = Speaker(
+        speaker: Speaker = Speaker(
             id=video_info.speaker_id,
             voice_description=voice_desc or Speaker.get_default_description(),
         )

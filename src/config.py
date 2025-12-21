@@ -1,17 +1,17 @@
 import sys
 from pathlib import Path
-from typing import List
 from dotenv import load_dotenv
 import os
+from typing import NoReturn
 
 
 class ConfigPaths:
     """Класс для управления путями к конфигурационным файлам."""
 
-    APP_NAME = "youtube-2-whisper"
+    APP_NAME: str = "youtube-2-whisper"
 
     @classmethod
-    def get_env_paths(cls) -> List[Path]:
+    def get_env_paths(cls) -> list[Path]:
         """
         Возвращает список путей для поиска .env файла в порядке приоритета.
 
@@ -33,7 +33,7 @@ class ConfigPaths:
 class ConfigManager:
     """Менеджер конфигурации приложения."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Инициализация менеджера конфигурации."""
         self.whisper_api_url: str = ""
         self.whisper_api_key: str = ""
@@ -53,35 +53,35 @@ class ConfigManager:
         - API ключ
         - Имя модели (опционально)
         """
-        config_path = ConfigPaths.get_default_config_path()
+        config_path: Path = ConfigPaths.get_default_config_path()
         config_path.parent.mkdir(parents=True, exist_ok=True)
 
         print("\n🔧 Первая настройка youtube-2-whisper")
         print("=" * 60)
 
         # Основные параметры Whisper
-        url = input("Введите WHISPER_API_URL: ").strip()
-        key = input("Введите WHISPER_API_KEY: ").strip()
-        model = input("Введите WHISPER_MODEL_NAME [stt]: ").strip() or "stt"
+        url: str = input("Введите WHISPER_API_URL: ").strip()
+        key: str = input("Введите WHISPER_API_KEY: ").strip()
+        model: str = input("Введите WHISPER_MODEL_NAME [stt]: ").strip() or "stt"
 
         # Параметры LLM (опционально)
         print("\n--- Настройки LLM нормализации (опционально) ---")
-        llm_enabled = (
+        llm_enabled: str = (
             input("Включить LLM нормализацию текста? (y/n) [n]: ").strip().lower()
         )
 
         with open(config_path, "w", encoding="utf-8") as f:
-            f.write(f"WHISPER_API_URL={url}\n")
-            f.write(f"WHISPER_API_KEY={key}\n")
-            f.write(f"WHISPER_MODEL_NAME={model}\n")
+            _ = f.write(f"WHISPER_API_URL={url}\n")
+            _ = f.write(f"WHISPER_API_KEY={key}\n")
+            _ = f.write(f"WHISPER_MODEL_NAME={model}\n")
 
             if llm_enabled in ["y", "yes", "д", "да"]:
-                llm_model = input("Введите LLM_MODEL_NAME [llm]: ").strip() or "llm"
-                f.write("LLM_ENABLED=true\n")
-                f.write(f"LLM_MODEL_NAME={llm_model}\n")
+                llm_model: str = input("Введите LLM_MODEL_NAME [llm]: ").strip() or "llm"
+                _ = f.write("LLM_ENABLED=true\n")
+                _ = f.write(f"LLM_MODEL_NAME={llm_model}\n")
 
         print(f"\n✅ Конфиг сохранен: {config_path}")
-        load_dotenv(config_path)
+        _ = load_dotenv(config_path)
 
     def load(self) -> None:
         """
@@ -96,25 +96,24 @@ class ConfigManager:
         Raises:
             SystemExit: Если обязательные параметры не найдены
         """
-        env_loaded = False
-        loaded_path = None
+        env_loaded: bool = False
+        loaded_path: Path | None = None
 
         # Ищем .env файл
         for env_path in ConfigPaths.get_env_paths():
             if env_path.exists():
-                load_dotenv(env_path, override=False)
+                _ = load_dotenv(env_path, override=False)
                 env_loaded = True
                 loaded_path = env_path
                 break
 
         # Загружаем переменные
-        whisper_url = os.getenv("WHISPER_API_URL")
-        whisper_key = os.getenv("WHISPER_API_KEY")
+        whisper_url: str | None = os.getenv("WHISPER_API_URL")
+        whisper_key: str | None = os.getenv("WHISPER_API_KEY")
 
         # Валидация обязательных параметров
         if not whisper_url or not whisper_key:
             self._handle_missing_config(env_loaded)
-            return
 
         self.whisper_api_url = whisper_url
         self.whisper_api_key = whisper_key
@@ -137,7 +136,7 @@ class ConfigManager:
         if self.llm_enabled:
             print(f"🤖 LLM нормализация: включена (модель: {self.llm_model_name})")
 
-    def _handle_missing_config(self, env_loaded: bool) -> None:
+    def _handle_missing_config(self, env_loaded: bool) -> NoReturn:
         """
         Обрабатывает ситуацию отсутствия конфигурации.
 
@@ -159,11 +158,10 @@ class ConfigManager:
 
         # Предлагаем создать конфиг
         try:
-            choice = input("\n❓ Хотите создать конфиг сейчас? (y/n): ").strip().lower()
+            choice: str = input("\n❓ Хотите создать конфиг сейчас? (y/n): ").strip().lower()
             if choice in ["y", "yes", "д", "да"]:
                 self.create_interactive_config()
                 self.load()  # Перезагружаем конфиг
-                return
         except (KeyboardInterrupt, EOFError):
             print("\n")
 
@@ -171,4 +169,4 @@ class ConfigManager:
 
 
 # Глобальный экземпляр менеджера конфигурации
-config = ConfigManager()
+config: ConfigManager = ConfigManager()

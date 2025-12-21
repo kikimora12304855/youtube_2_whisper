@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Optional
 from openai import OpenAI
 
 from utils import normalize_text_simple
@@ -17,8 +16,8 @@ class WhisperClient:
             api_key: API ключ
             model_name: Имя модели Whisper
         """
-        self.client = OpenAI(api_key=api_key, base_url=api_url)
-        self.model_name = model_name
+        self.client: OpenAI = OpenAI(api_key=api_key, base_url=api_url)
+        self.model_name: str = model_name
 
     def transcribe(self, audio_file_path: Path) -> str:
         """
@@ -33,7 +32,7 @@ class WhisperClient:
         Raises:
             Exception: При ошибке транскрипции
         """
-        with open(audio_file_path, "rb") as audio_file:
+        with open(file=audio_file_path, mode="rb") as audio_file:
             transcription = self.client.audio.transcriptions.create(
                 model=self.model_name, file=audio_file, response_format="json"
             )
@@ -53,7 +52,7 @@ class LLMNormalizer:
     """
 
     # Системный промпт по умолчанию для нормализации
-    DEFAULT_SYSTEM_PROMPT = """
+    DEFAULT_SYSTEM_PROMPT: str = """
 ## ЗАДАЧА
 Я выполняю нормализацию русскоязычного текста для последующего синтеза речи (TTS).
 
@@ -98,10 +97,10 @@ class LLMNormalizer:
         api_url: str,
         api_key: str,
         model_name: str = "llm",
-        system_prompt: Optional[str] = None,
+        system_prompt: str | None = None,
         temperature: float = 0.3,
         top_p: float = 0.9,
-    ):
+    ) -> None:
         """
         Инициализация LLM нормализатора.
 
@@ -118,13 +117,13 @@ class LLMNormalizer:
             top_p: Top-P (nucleus) sampling (0.0-1.0)
 
         """
-        self.client = OpenAI(api_key=api_key, base_url=api_url)
+        self.client: OpenAI = OpenAI(api_key=api_key, base_url=api_url)
         self.system_prompt = (
             system_prompt if system_prompt is not None else self.DEFAULT_SYSTEM_PROMPT
         )
-        self.model_name = model_name
-        self.temperature = temperature
-        self.top_p = top_p
+        self.model_name: str = model_name
+        self.temperature: float = temperature
+        self.top_p: float = top_p
 
     def normalize(self, raw_text: str) -> str:
         """
@@ -186,8 +185,8 @@ class TranscriptionService:
     def __init__(
         self,
         whisper_client: WhisperClient,
-        llm_normalizer: Optional[LLMNormalizer] = None,
-    ):
+        llm_normalizer: LLMNormalizer | None = None,
+    ) -> None:
         """
         Инициализация сервиса.
 
@@ -195,10 +194,10 @@ class TranscriptionService:
             whisper_client: Клиент Whisper
             llm_normalizer: LLM нормализатор (опционально)
         """
-        self.whisper = whisper_client
-        self.llm = llm_normalizer
+        self.whisper: WhisperClient = whisper_client
+        self.llm: LLMNormalizer | None = llm_normalizer
 
-    def process(self, audio_file_path: Path) -> tuple[str, Optional[str]]:
+    def process(self, audio_file_path: Path) -> tuple[str, str | None]:
         """
         Обрабатывает аудио файл: транскрипция + нормализация.
 

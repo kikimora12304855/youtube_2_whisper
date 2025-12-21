@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Optional, Dict, Any
 import yt_dlp
 from yt_dlp.utils import download_range_func
 
@@ -11,7 +10,7 @@ class AudioDownloader:
     """Класс для загрузки и обработки аудио с видео платформ."""
 
     # Параметры постобработки аудио для оптимального качества транскрипции
-    AUDIO_POSTPROCESSOR_ARGS = [
+    AUDIO_POSTPROCESSOR_ARGS: list[str] = [
         "-ar",
         "24000",  # Sample rate 24kHz (оптимально для речи)
         "-ac",
@@ -22,14 +21,14 @@ class AudioDownloader:
         "12",  # Максимальное сжатие FLAC
     ]
 
-    def __init__(self, quiet: bool = True):
+    def __init__(self, quiet: bool = True) -> None:
         """
         Инициализация загрузчика.
 
         Args:
             quiet: Подавлять вывод yt-dlp
         """
-        self.quiet = quiet
+        self.quiet: bool = quiet
 
     def get_video_info(self, video_url: str) -> VideoInfo:
         """
@@ -44,16 +43,16 @@ class AudioDownloader:
         Raises:
             Exception: При ошибке получения информации
         """
-        ydl_opts = {"quiet": self.quiet, "no_warnings": True}
+        ydl_opts: dict[str, object]  = {"quiet": self.quiet, "no_warnings": True}
 
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:  # type: ignore[arg-type]
-            info = ydl.extract_info(video_url, download=False)
+        with yt_dlp.YoutubeDL(params=ydl_opts) as ydl: # pyright: ignore[reportArgumentType]
+            info = ydl.extract_info(url=video_url, download=False)
 
             # Санитизация ID видео
-            video_id = sanitize_filename(info["id"])
+            video_id: str = sanitize_filename(filename=info["id"])
 
             # Определяем speaker_id из channel_id или uploader_id
-            speaker_id = info.get("channel_id") or info.get("uploader_id") or video_id
+            speaker_id: str = info.get("channel_id") or info.get("uploader_id") or video_id
 
             return VideoInfo(
                 video_id=video_id,
@@ -63,7 +62,7 @@ class AudioDownloader:
             )
 
     def download_audio(
-        self, video_url: str, output_path: Path, segment: Optional[TimeSegment] = None
+        self, video_url: str, output_path: Path, segment: TimeSegment | None = None
     ) -> Path:
         """
         Загружает аудио из видео и конвертирует в FLAC.
@@ -79,21 +78,21 @@ class AudioDownloader:
         Raises:
             Exception: При ошибке загрузки
         """
-        ydl_opts: Dict[str, Any] = self._build_ydl_options(output_path, segment)
+        ydl_opts: dict[str, object] = self._build_ydl_options(output_path, segment)
 
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:  # type: ignore[arg-type]
-            ydl.download([video_url])
+        with yt_dlp.YoutubeDL(params=ydl_opts) as ydl:  # pyright: ignore[reportArgumentType] 
+            ydl.download(url_list=[video_url])
 
         # Проверяем создание файла
-        flac_file = output_path.with_suffix(".flac")
+        flac_file: Path = output_path.with_suffix(suffix=".flac")
         if not flac_file.exists():
             raise FileNotFoundError(f"FLAC файл не был создан: {flac_file}")
 
         return flac_file
 
     def _build_ydl_options(
-        self, output_path: Path, segment: Optional[TimeSegment] = None
-    ) -> Dict[str, Any]:
+        self, output_path: Path, segment: TimeSegment | None = None
+    ) -> dict[str, object]:
         """
         Формирует параметры для yt-dlp.
 
@@ -102,9 +101,9 @@ class AudioDownloader:
             segment: Временной сегмент (опционально)
 
         Returns:
-            Dict: Конфигурация yt-dlp
+            dict: Конфигурация yt-dlp
         """
-        opts = {
+        opts: dict[str, object] = {
             "format": "bestaudio/best",  # Лучшее качество аудио
             "outtmpl": str(output_path),
             "postprocessors": [
@@ -121,8 +120,8 @@ class AudioDownloader:
         # Если указан сегмент - загружаем только его
         if segment is not None:
             opts["download_ranges"] = download_range_func(
-                [],
-                [(segment.start, segment.end)],  # type: ignore[arg-type]
+                chapters=[],
+                ranges=[(segment.start, segment.end)],  # pyright: ignore[reportArgumentType]
             )
             opts["force_keyframes_at_cuts"] = True
         else:
@@ -134,9 +133,9 @@ class AudioDownloader:
     @staticmethod
     def generate_filename(
         video_info: VideoInfo,
-        segment: Optional[TimeSegment] = None,
-        start_str: Optional[str] = None,
-        end_str: Optional[str] = None,
+        segment: TimeSegment | None = None,
+        start_str: str | None = None,
+        end_str: str | None = None,
     ) -> str:
         """
         Генерирует имя файла на основе видео и сегмента.
@@ -155,7 +154,7 @@ class AudioDownloader:
             return video_info.video_id
 
         # Сегмент видео
-        start_safe = sanitize_filename(start_str or str(segment.start))
-        end_safe = sanitize_filename(end_str or str(segment.end))
+        start_safe: str = sanitize_filename(filename=start_str or str(segment.start))
+        end_safe: str = sanitize_filename(filename=end_str or str(segment.end))
 
         return f"{video_info.video_id}_{start_safe}_{end_safe}"

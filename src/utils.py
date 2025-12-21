@@ -1,10 +1,7 @@
 import re
-from typing import Union
-from typing import Optional
-
 
 # Константы
-MAX_FILENAME_LENGTH = 200
+MAX_FILENAME_LENGTH: int = 200
 
 
 def sanitize_filename(filename: str, max_length: int = MAX_FILENAME_LENGTH) -> str:
@@ -35,7 +32,7 @@ def sanitize_filename(filename: str, max_length: int = MAX_FILENAME_LENGTH) -> s
     return clean_name
 
 
-def parse_time(time_str: Union[str, int, float]) -> float:
+def parse_time(time_parse_str: str | int | float) -> float:
     """
     Парсит временную метку в секунды.
 
@@ -73,14 +70,14 @@ def parse_time(time_str: Union[str, int, float]) -> float:
         >>> parse_time("1:2:30:500")
         3750.5
     """
-    time_str = str(time_str).strip()
+    time_str: str = str(time_parse_str).strip()
 
     # Простой числовой формат (целое или десятичное)
     if ":" not in time_str:
         return float(time_str)
 
     # Разбиваем по двоеточию
-    parts = time_str.split(":")
+    parts: list[str] = time_str.split(sep=":")
 
     # Обработка разных форматов
     if len(parts) == 2:
@@ -103,8 +100,8 @@ def parse_time(time_str: Union[str, int, float]) -> float:
     else:
         raise ValueError(
             f"Неверный формат времени: {time_str}. "
-            f"Поддерживаются форматы: "
-            f"секунды (45 или 20.5), MM:SS, HH:MM:SS, HH:MM:SS:MSS"
+            + "Поддерживаются форматы: "
+            + "секунды (45 или 20.5), MM:SS, HH:MM:SS, HH:MM:SS:MSS"
         )
 
 
@@ -154,7 +151,7 @@ def format_time(seconds: float) -> str:
 
 
 def validate_time_range(
-    start: float, end: float, max_duration: Optional[float] = None
+    start: float, end: float, max_duration: float | None = None
 ) -> bool:
     """
     Валидирует временной диапазон.
